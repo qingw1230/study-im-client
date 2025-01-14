@@ -1,24 +1,41 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+const NODE_ENV = process.env.NODE_ENV
+import { onLoginOrRegister, onLoginSuccess } from './ipc'
+
+const login_width = 300;
+const login_height = 370;
+const register_height = 490;
 
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    icon: icon,
+    width: login_width,
+    height: login_height,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    titleBarStyle: 'hidden',
+    resizable: false,
+    frame: false,
+    transparent: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: false,
     }
   })
 
+  // 打开控制台
+  if (NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.setTitle("StudyIM")
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -33,6 +50,26 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  // 监听登录注册
+  onLoginOrRegister((isLogin) => {
+    mainWindow.setResizable(true)
+    if (isLogin) {
+      mainWindow.setSize(login_width, login_height)
+    } else {
+      mainWindow.setSize(login_width, register_height)
+    }
+    mainWindow.setResizable(false)
+  })
+
+  onLoginSuccess((config) => {
+    mainWindow.setResizable(true)
+    mainWindow.setSize(850, 800)
+    mainWindow.center()
+    // 设置最大最小窗口大小
+    mainWindow.setMaximizable(true)
+    mainWindow.setMinimumSize(800, 600)
+  })
 }
 
 // This method will be called when Electron has finished

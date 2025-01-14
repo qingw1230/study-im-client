@@ -12,9 +12,22 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@': resolve('src/renderer/src')
       }
     },
-    plugins: [vue()]
+    plugins: [vue()],
+    server: {
+      hmr: true,
+      port: 5000,
+      proxy: {
+        "/api": {
+          target: "http://172.23.137.168:10000/",
+          changeOrigin: true,
+          pathRewrite: {
+            "^api": "/api"
+          }
+        }
+      }
+    }
   }
 })
