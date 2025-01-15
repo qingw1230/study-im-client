@@ -3,7 +3,7 @@
     <template #left-content>
       <div class="drag-panel drag"></div>
       <div class="top-search">
-        <el-input clearable placeholder="搜索" v-model="searchKey" size="middle" @keyup="search">
+        <el-input clearable placeholder="搜索" v-model="searchKey" size="default" @keyup="search">
           <template #suffix>
             <span class="iconfont icon-search"></span>
           </template>

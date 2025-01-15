@@ -13,6 +13,7 @@ import Request from '@/utils/Request.js'
 import Message from '@/utils/Message.js'
 import Api from '@/utils/Api.js'
 import Layout from '@/components/Layout.vue'
+import WinOp from '@/components/WinOp.vue'
 
 const app = createApp(App);
 
@@ -21,6 +22,7 @@ app.use(ElementPlus)
 app.use(router)
 
 app.component("Layout", Layout)
+app.component("WinOp", WinOp)
 
 app.config.globalProperties.Utils = Utils
 app.config.globalProperties.Verify = Verify
