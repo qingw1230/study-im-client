@@ -69,6 +69,8 @@ function createWindow() {
     // 设置最大最小窗口大小
     mainWindow.setMaximizable(true)
     mainWindow.setMinimumSize(800, 600)
+
+    // TODO(qingw1230): 管理后台的窗口
   })
 }
 
