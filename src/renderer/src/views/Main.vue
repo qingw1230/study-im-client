@@ -85,7 +85,7 @@ const changeMenu = (item) => {
     border: 1px solid #2e2e2e;
     border-right: none;
     padding-bottom: 10px;
-    height: calc(100vh);
+    
     .menu-list {
       width: 100%;
       flex: 1;
