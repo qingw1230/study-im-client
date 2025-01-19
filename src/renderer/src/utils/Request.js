@@ -6,14 +6,14 @@ import Api from '../utils/Api'
 const contentTypeForm = 'application/x-www-form-urlencoded;charset=UTF-8'
 const contentTypeJson = 'application/json'
 const responseTypeJson = 'json'
-let loading = null;
+let loading = null
+
 const instance = axios.create({
   withCredentials: true,
   baseURL: (import.meta.env.PROD ? Api.prodDomain : "") + "/api",
-  timeout: 10 * 1000,
-});
+  timeout: 5 * 1000,
+})
 
-// 请求前拦截器
 instance.interceptors.request.use(
   (config) => {
     if (config.showLoading) {
@@ -34,37 +34,42 @@ instance.interceptors.request.use(
   }
 );
 
-// 请求后拦截器
 instance.interceptors.response.use(
   (response) => {
     const { showLoading, errorCallback, showError = true, responseType } = response.config;
     if (showLoading && loading) {
       loading.close()
     }
+    // 服务端返回的 JSON 格式的响应体
     const responseData = response.data;
     if (responseType == "arraybuffer" || responseType == "blob") {
       return responseData;
     }
 
-    // 正常请求
     if (responseData.code == 200) {
       return responseData;
+    } else {
+      if (errorCallback) {
+        errorCallback(responseData);
+      }
+      return Promise.reject({ showError: showError, msg: responseData.info });
     }
-    return responseData
+  },
+  (error) => {
+    if (error.config.showLoading && loading) {
+      loading.close();
+    }
+    return Promise.reject({ showError: true, msg: "网络异常" })
   }
 );
 
 const request = (config) => {
   const { url, params, dataType, showLoading = true, responseType = responseTypeJson, showError = true } = config;
-  let contentType = contentTypeForm;
+  let contentType = contentTypeJson;
   const body = JSON.stringify(params);
-  if (dataType != null && dataType == 'json') {
-    contentType = contentTypeJson;
-  }
   const token = localStorage.getItem('token')
   let headers = {
     'Content-Type': contentType,
-    'X-Requested-With': 'XMLHttpRequest',
     "token": token
   }
   return instance.post(url, body, {
@@ -79,6 +84,6 @@ const request = (config) => {
     }
     return null;
   });
-};
+}
 
 export default request;

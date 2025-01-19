@@ -1,6 +1,7 @@
 <template>
   <div class="login-panel">
-    <div class="title drag">StudyIM</div>
+    <div class="title drag"> StudyIM </div>
+    <!-- showLoading 为 true 时就显示加载图 -->
     <div v-if="showLoading" class="loading-panel">
       <img src="../assets/img/loading.gif" />
     </div>
@@ -92,6 +93,7 @@ const changeOpType = () => {
 }
 
 const checkCodeUrl = ref(null)
+// changeCheckCode 重新获取验证码
 const changeCheckCode = async () => {
   let result = await proxy.Request({
     url: proxy.Api.checkCode,
@@ -150,9 +152,6 @@ const submit = async () => {
   // 向 register 或 login 接口发送 POST 请求
   let result = await proxy.Request({
     url: isLogin.value ? proxy.Api.login : proxy.Api.register,
-    dataType: "json",
-    showLoading: isLogin.value ? false : true,
-    showError: false,
     params: {
       email: formData.value.email,
       password: formData.value.password,
@@ -160,12 +159,16 @@ const submit = async () => {
       checkCodeId: localStorage.getItem("checkCodeId"),
       nickName: formData.value.nickName,
     },
+    showLoading: isLogin.value ? false : true,
+    showError: false,
+    // 将加载图关闭，重置验证码
     errorCallback: (response) => {
       showLoading.value = false
       changeCheckCode()
       errorMsg.value = response.info
     }
   })
+
   if (!result) {
     return
   }
