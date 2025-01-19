@@ -4,7 +4,8 @@ const api = {
   checkCode: "/account/get_check_code",
   login: "/account/login",
   register: "/account/register",
-  getUserInfo: "/account/get_user_info"
+  getUserInfo: "/account/get_user_info",
+  addFriend: "/friend/add_friend"
 }
 
 export default api;

@@ -59,7 +59,11 @@ instance.interceptors.response.use(
     if (error.config.showLoading && loading) {
       loading.close();
     }
-    return Promise.reject({ showError: true, msg: "网络异常" })
+    if (error.response.status === 400) {
+      return Promise.reject({ showError: true, msg: "请求参数错误" })
+    } else {
+      return Promise.reject({ showError: true, msg: "网络异常" })
+    }
   }
 );
 

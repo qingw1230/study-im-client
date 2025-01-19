@@ -18,11 +18,13 @@
     </div>
     <div v-else class="no-data"> 没有搜索到任何结果 </div>
   </ContentPanel>
+  <SearchAdd ref="searchAddRef" @reload="resetForm"></SearchAdd>
 </template>
 
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick, computed } from 'vue'
 import { useUserInfoStore } from '@/stores/UserInfoStore'
+import SearchAdd from './SearchAdd.vue'
 
 const { proxy } = getCurrentInstance()
 const userInfoStore = useUserInfoStore()
@@ -49,6 +51,11 @@ const search = async () => {
     return
   }
   searchResult.value = result.data
+}
+
+const searchAddRef = ref()
+const applyContact = () => {
+  searchAddRef.value.show(searchResult.value)
 }
 </script>
 
