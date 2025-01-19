@@ -47,21 +47,10 @@ instance.interceptors.response.use(
     }
 
     // 正常请求
-    if (responseData.code == 200 || responseData.code == 10003) {
+    if (responseData.code == 200) {
       return responseData;
-    } else if (responseData.code == 901) {
-      // 登录超时
-      setTimeout(() => {
-        window.ipcRenderer.send('reLogin')
-      }, 2000);
-      return Promise.reject({ showError: true, msg: "登录超时" });
-    } else {
-      // 其他错误
-      if (errorCallback) {
-        errorCallback(responseData);
-      }
-      return Promise.reject({ showError: showError, msg: responseData.info });
     }
+    return responseData
   }
 );
 

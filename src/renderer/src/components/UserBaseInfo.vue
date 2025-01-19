@@ -1,6 +1,6 @@
 <template>
   <div class="user-panel">
-    <AvatarBase :userID="userInfo.userID || userInfo.contactID" :width="60" :borderRadius="5" :showDetail="true">
+    <AvatarBase :userId="userInfo.userId || userInfo.contactId" :width="60" :borderRadius="5" :showDetail="true">
     </AvatarBase>
     <div class="user-info">
       <div class="nick-name">
@@ -8,7 +8,7 @@
         <span v-if="userInfo.sex == 1" class="iconfont icon-man"></span>
         <span v-if="userInfo.sex == 2" class="iconfont icon-woman"></span>
       </div>
-      <div class="info">ID：{{ userInfo.userID || userInfo.contactID }}</div>
+      <div class="info">ID：{{ userInfo.userId || userInfo.contactId }}</div>
       <div class="info" v-if="showArea"> 地区：{{ proxy.Utils.getAreaInfo(userInfo.areaName) }} </div>
     </div>
   </div>

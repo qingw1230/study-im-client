@@ -17,6 +17,7 @@ import WinOp from '@/components/WinOp.vue'
 import ContentPanel from '@/components/ContentPanel.vue'
 import ShowLocalImage from '@/components/ShowLocalImage.vue';
 import UserBaseInfo from '@/components/UserBaseInfo.vue'
+import Dialog from '@/components/Dialog.vue';
 
 const app = createApp(App);
 
@@ -29,6 +30,7 @@ app.component("WinOp", WinOp)
 app.component("ContentPanel", ContentPanel)
 app.component("ShowLocalImage", ShowLocalImage)
 app.component("UserBaseInfo", UserBaseInfo)
+app.component("Dialog", Dialog)
 
 app.config.globalProperties.Utils = Utils
 app.config.globalProperties.Verify = Verify

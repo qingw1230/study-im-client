@@ -9,7 +9,7 @@
         <span class="contact-type"> {{ contactTypeName }} </span>
         <UserBaseInfo :userInfo="searchResult" :showArea="true"></UserBaseInfo> 
       </div>
-      <div class="op-btn" v-if="searchResult.userID != userInfoStore.getInfo().userID">
+      <div class="op-btn" v-if="searchResult.userId != userInfoStore.getInfo().userId">
         <el-button type="primary" v-if="searchResult.status == null ||
           searchResult.status == -1" @click="applyContact">
           {{ "添加到联系人" }} </el-button>
@@ -29,7 +29,7 @@ const userInfoStore = useUserInfoStore()
 
 // contactTypeName 联系人类型: 自己 用户
 const contactTypeName = computed(() => {
-  if (userInfoStore.getInfo().userID === searchResult.value.userID) {
+  if (userInfoStore.getInfo().userId === searchResult.value.userId) {
     return '自己'
   } else {
     return '用户'

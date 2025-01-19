@@ -147,6 +147,7 @@ const submit = async () => {
     showLoading.value = true
   }
 
+  // 向 register 或 login 接口发送 POST 请求
   let result = await proxy.Request({
     url: isLogin.value ? proxy.Api.login : proxy.Api.register,
     dataType: "json",
@@ -173,7 +174,6 @@ const submit = async () => {
     // 保存用户信息
     userInfoStore.setInfo(result.data)
     localStorage.setItem('token', result.data.token)
-    // window.ipcRenderer.send('setLocalStore', { key: 'email', value: formData.value.email })
 
     router.push('/main')
 

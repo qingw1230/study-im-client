@@ -1,7 +1,7 @@
 <template>
   <div class="user-avatar" :style="{ width: width + 'px', height: width + 'px', 'border-radius': borderRadius + 'px' }"
     @click="showDetailHandler">
-    <ShowLocalImage :width="width" :fileId="userID" partType="avatar" :forceGet="true">
+    <ShowLocalImage :width="width" :fileId="userId" partType="avatar" :forceGet="true">
     </ShowLocalImage>
   </div>
 </template>
@@ -12,7 +12,7 @@ import { ref, reactive, getCurrentInstance, nextTick } from 'vue'
 const { proxy } = getCurrentInstance()
 
 const props = defineProps({
-  userID: {
+  userId: {
     type: String
   },
   width: {
