@@ -5,7 +5,8 @@ const api = {
   login: "/account/login",
   register: "/account/register",
   getUserInfo: "/account/get_user_info",
-  addFriend: "/friend/add_friend"
+  addFriend: "/friend/add_friend",
+  getFriendList: "/friend/get_friend_list"
 }
 
 export default api;

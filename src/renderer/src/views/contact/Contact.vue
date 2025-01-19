@@ -19,6 +19,11 @@
               <div class="text">{{ sub.name }}</div>
             </div>
             <template v-for="contact in item.contactData">
+              <div :class="['part-item', contact[item.contactInfo][item.contactId] == route.query.contactId ? 'active' : '']"
+                @click="contactDetail(contact, item)">
+                <Avatar :userId="contact[item.contactInfo][item.contactId]" :width="35"></Avatar>
+                <div class="text"> {{ contact[item.contactInfo][item.contactName] }} </div>
+              </div>
             </template>
             <template v-if="item.contactData && item.contactData.length == 0">
               <div class="no-data">
@@ -94,8 +99,9 @@ const partList = ref([
   {
     partName: '我的好友',
     children: [],
-    contactId: 'contactId',
-    contactName: 'contactName',
+    contactInfo: 'friendInfo',
+    contactId: 'userId',
+    contactName: 'nickName',
     contactData: [],
     contactPath: '/contact/userDetail',
     emptyMsg: '暂无好友'
@@ -113,6 +119,24 @@ const partJump = (data) => {
   router.push(data.path)
 }
 
+// loadFriendList 获取好友列表
+const loadFriendList = async () => {
+  let result = await proxy.Request({
+    url: proxy.Api.getFriendList,
+    params: {
+      fromUserId: "U30170892524"
+      // fromUserId: userInfoStore.getInfo().userId
+    }
+  })
+  if (!result) {
+    return
+  }
+  // TODO(qingw1230): 添加群 选项加入后更改下标
+  partList.value[3].contactData = result.data
+  console.log(result.data)
+}
+
+loadFriendList()
 
 </script>
 
