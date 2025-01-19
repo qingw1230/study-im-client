@@ -47,7 +47,7 @@ instance.interceptors.response.use(
     }
 
     // 正常请求
-    if (responseData.code == 200) {
+    if (responseData.code == 200 || responseData.code == 10003) {
       return responseData;
     } else if (responseData.code == 901) {
       // 登录超时
@@ -55,7 +55,6 @@ instance.interceptors.response.use(
         window.ipcRenderer.send('reLogin')
       }, 2000);
       return Promise.reject({ showError: true, msg: "登录超时" });
-
     } else {
       // 其他错误
       if (errorCallback) {
@@ -63,12 +62,6 @@ instance.interceptors.response.use(
       }
       return Promise.reject({ showError: showError, msg: responseData.info });
     }
-  },
-  (error) => {
-    if (error.config.showLoading && loading) {
-      loading.close();
-    }
-    return Promise.reject({ showError: true, msg: "网络异常" })
   }
 );
 

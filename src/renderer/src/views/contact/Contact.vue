@@ -31,7 +31,7 @@
     </template>
     <template #right-content>
       <div class="title-panel drag"> {{ rightTitle }} </div>
-      <router-view v-slot="{Component}">
+      <router-view v-slot="{ Component }">
         <component :is="Component" ref="componentRef"></component>
       </router-view>
     </template>
@@ -103,6 +103,16 @@ const partList = ref([
 ])
 
 const rightTitle = ref()
+
+const partJump = (data) => {
+  if (data.showTitle) {
+    rightTitle.value = data.name
+  } else {
+    rightTitle.value = null
+  }
+  router.push(data.path)
+}
+
 
 </script>
 

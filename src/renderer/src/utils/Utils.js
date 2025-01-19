@@ -5,6 +5,15 @@ const isEmpty = (str) => {
   return false
 }
 
+// getAreaInfo 将逗号替换为空格
+const getAreaInfo = (data) => {
+  if (isEmpty(data)) {
+    return "-";
+  }
+  return data.replace(",", " ");
+}
+
 export default {
   isEmpty,
+  getAreaInfo,
 }
