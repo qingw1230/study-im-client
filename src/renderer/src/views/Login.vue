@@ -177,6 +177,7 @@ const submit = async () => {
     // 保存用户信息
     userInfoStore.setInfo(result.data)
     localStorage.setItem('token', result.data.token)
+    localStorage.setItem('userId', result.data.userId)
 
     router.push('/main')
 

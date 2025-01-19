@@ -57,6 +57,11 @@ const searchAddRef = ref()
 const applyContact = () => {
   searchAddRef.value.show(searchResult.value)
 }
+
+const resetForm = () => {
+  searchResult.value = {}
+  contactId.value = undefined
+}
 </script>
 
 <style lang="scss" scoped>

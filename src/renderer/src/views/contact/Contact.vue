@@ -19,7 +19,8 @@
               <div class="text">{{ sub.name }}</div>
             </div>
             <template v-for="contact in item.contactData">
-              <div :class="['part-item', contact[item.contactInfo][item.contactId] == route.query.contactId ? 'active' : '']"
+              <div
+                :class="['part-item', contact[item.contactInfo][item.contactId] == route.query.contactId ? 'active' : '']"
                 @click="contactDetail(contact, item)">
                 <Avatar :userId="contact[item.contactInfo][item.contactId]" :width="35"></Avatar>
                 <div class="text"> {{ contact[item.contactInfo][item.contactName] }} </div>
@@ -44,12 +45,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick } from 'vue'
+import { ref, reactive, getCurrentInstance, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useContactStateStore } from '@/stores/ContactStateStore'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
+const contactStateStore = useContactStateStore()
+
+const searchKey = ref()
+const search = () => { }
 
 const partList = ref([
   {
@@ -137,6 +143,21 @@ const loadFriendList = async () => {
 }
 
 loadFriendList()
+
+watch(
+  () => contactStateStore.contactReload,
+  (newVal, oldVal) => {
+    if (!newVal) {
+      return
+    }
+    switch (newVal) {
+      case "USER":
+        loadFriendList()
+        break
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 </script>
 

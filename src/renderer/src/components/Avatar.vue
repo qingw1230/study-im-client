@@ -71,6 +71,10 @@ const getUserInfo = async () => {
     userInfo.value = Object.assign({}, result.data)
   }
 }
+
+const addContact = () => {}
+const sendMessage = () => {}
+
 </script>
 
 <style lang="scss" scoped>
