@@ -1,7 +1,7 @@
 <template>
   <ContentPanel>
     <div class="search-form">
-      <el-input clearable placeholder="请输入用户ID" v-model="contactId" size="large" @keydown.enter="search"></el-input>
+      <el-input clearable placeholder="请输入用户 ID" v-model="contactId" size="large" @keydown.enter="search"></el-input>
       <div class="search-btn iconfont icon-search" @click="search"></div>
     </div>
     <div v-if="searchResult && Object.keys(searchResult).length > 0" class="search-result-panel">
@@ -10,10 +10,8 @@
         <UserBaseInfo :userInfo="searchResult" :showArea="true"></UserBaseInfo> 
       </div>
       <div class="op-btn" v-if="searchResult.userId != userInfoStore.getInfo().userId">
-        <el-button type="primary" v-if="searchResult.status == null ||
-          searchResult.status == -1" @click="applyContact">
-          {{ "添加到联系人" }} </el-button>
-        <el-button type="primary" v-if="searchResult.status == 1" @click="sendMessage"> 发消息 </el-button>
+        <el-button type="primary" v-if="searchResult.isFriend == true" @click="sendMessage"> 发消息 </el-button>
+        <el-button type="primary" v-else @click="applyContact"> 添加到联系人 </el-button>
       </div>
     </div>
     <div v-else class="no-data"> 没有搜索到任何结果 </div>
