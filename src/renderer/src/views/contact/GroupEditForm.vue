@@ -57,11 +57,11 @@ const submit = async () => {
     } else {
       proxy.Message.success("群聊创建成功")
     }
-    formDataRef.value.resetFileds()
+    formDataRef.value.resetFields()
     // 重新加载我的群聊列表
     contactStateStore.setContactReload("MYGROUP")
   })
-} 
+}
 
 </script>
 

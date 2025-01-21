@@ -18,18 +18,28 @@
               <div :class="['iconfont', sub.icon]" :style="{ background: sub.iconBgColor }"></div>
               <div class="text">{{ sub.name }}</div>
             </div>
-            <template v-for="contact in item.contactData">
-              <div
-                :class="['part-item', contact[item.contactInfo][item.contactId] == route.query.contactId ? 'active' : '']"
-                @click="contactDetail(contact, item)">
-                <Avatar :userId="contact[item.contactInfo][item.contactId]" :width="35"></Avatar>
-                <div class="text"> {{ contact[item.contactInfo][item.contactName] }} </div>
-              </div>
+            <!-- 好友列表返回格式不同，特殊处理 -->
+            <template v-if="item.partName == '我的好友'">
+              <template v-for="contact in item.contactData">
+                <div
+                  :class="['part-item', contact[item.contactInfo][item.contactId] == route.query.contactId ? 'active' : '']"
+                  @click="contactDetail(contact, item)">
+                  <Avatar :userId="contact[item.contactInfo][item.contactId]" :width="35"></Avatar>
+                  <div class="text"> {{ contact[item.contactInfo][item.contactName] }} </div>
+                </div>
+              </template>
+            </template>
+            <template v-else>
+              <template v-for="contact in item.contactData">
+                <div :class="['part-item', contact[item.contactId] == route.query.contactId ? 'active' : '']"
+                  @click="contactDetail(contact, item)">
+                  <Avatar :userId="contact[item.contactId]" :width="35"></Avatar>
+                  <div class="text"> {{ contact[item.contactName] }} </div>
+                </div>
+              </template>
             </template>
             <template v-if="item.contactData && item.contactData.length == 0">
-              <div class="no-data">
-                {{ item.emptyMsg }}
-              </div>
+              <div class="no-data"> {{ item.emptyMsg }} </div>
             </template>
           </div>
         </template>
@@ -131,7 +141,7 @@ const partJump = (data) => {
 const loadFriendList = async () => {
   let result = await proxy.Request({
     url: proxy.Api.getFriendList,
-    params: { 
+    params: {
       fromUserId: userInfoStore.getInfo().userId
     }
   })

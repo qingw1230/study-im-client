@@ -38,7 +38,6 @@ const searchResultRef = ref()
 
 const emit = defineEmits(['reload'])
 const submitApply = async () => {
-  debugger
   let result = await proxy.Request({
     url: proxy.Api.addFriend,
     params: {
