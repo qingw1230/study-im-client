@@ -48,11 +48,13 @@
 import { ref, reactive, getCurrentInstance, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useContactStateStore } from '@/stores/ContactStateStore'
+import { useUserInfoStore } from '@/stores/UserInfoStore'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
 const contactStateStore = useContactStateStore()
+const userInfoStore = useUserInfoStore()
 
 const searchKey = ref()
 const search = () => { }
@@ -81,7 +83,7 @@ const partList = ref([
     partName: '我的群聊',
     children: [
       {
-        name: '新建群聊',
+        name: '创建群聊',
         icon: 'icon-add-group',
         iconBgColor: '#1485ee',
         path: '/contact/createGroup'
@@ -129,9 +131,8 @@ const partJump = (data) => {
 const loadFriendList = async () => {
   let result = await proxy.Request({
     url: proxy.Api.getFriendList,
-    params: {
-      fromUserId: "U30170892524"
-      // fromUserId: userInfoStore.getInfo().userId
+    params: { 
+      fromUserId: userInfoStore.getInfo().userId
     }
   })
   if (!result) {
@@ -139,10 +140,27 @@ const loadFriendList = async () => {
   }
   // TODO(qingw1230): 添加群 选项加入后更改下标
   partList.value[3].contactData = result.data
-  console.log(result.data)
 }
 
 loadFriendList()
+
+// loadMyGroup 获取创建的群聊
+const loadMyGroup = async () => {
+  let result = await proxy.Request({
+    url: proxy.Api.getJoinedGroupList,
+    params: {
+      fromUserId: userInfoStore.getInfo().userId,
+      roleLevel: 2
+    },
+    showLoading: false,
+  })
+  if (!result) {
+    return
+  }
+  partList.value[1].contactData = result.data
+}
+
+loadMyGroup()
 
 watch(
   () => contactStateStore.contactReload,
@@ -151,6 +169,9 @@ watch(
       return
     }
     switch (newVal) {
+      case "MYGROUP":
+        loadMyGroup()
+        break
       case "USER":
         loadFriendList()
         break
