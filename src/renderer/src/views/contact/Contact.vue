@@ -172,6 +172,29 @@ const loadMyGroup = async () => {
 
 loadMyGroup()
 
+// contactDetail 获取联系人详细信息
+const contactDetail = (contact, part) => {
+  if (part.showTitle) {
+    rightTitle.value = contact[part.contactName]
+  } else {
+    rightTitle.value = null
+  }
+
+  let userId
+  if (part.partName = '我的好友') {
+    userId = contact[part.contactInfo][part.contactId]
+  } else {
+    userId = contact[part.contactId]
+  }
+
+  router.push({
+    path: part.contactPath,
+    query: {
+      contactId: userId
+    }
+  })
+}
+
 watch(
   () => contactStateStore.contactReload,
   (newVal, oldVal) => {
@@ -184,6 +207,11 @@ watch(
         break
       case "USER":
         loadFriendList()
+        break
+      case "DELETE_FRIEND":
+        loadFriendList()
+        router.push('/contact/blank')
+        rightTitle.value = null
         break
     }
   },

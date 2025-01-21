@@ -20,6 +20,7 @@ import UserBaseInfo from '@/components/UserBaseInfo.vue'
 import Dialog from '@/components/Dialog.vue';
 import Avatar from '@/components/Avatar.vue';
 import AvatarUpload from '@/components/AvatarUpload.vue';
+import Confirm from '@/utils/Confirm.js'
 
 const app = createApp(App);
 
@@ -41,4 +42,6 @@ app.config.globalProperties.Verify = Verify
 app.config.globalProperties.Request = Request 
 app.config.globalProperties.Message = Message 
 app.config.globalProperties.Api = Api 
+app.config.globalProperties.Confirm = Confirm
+
 app.mount('#app')

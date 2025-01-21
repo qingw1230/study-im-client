@@ -4,7 +4,7 @@
       :showCancel="true" @close="dialogConfig.show = false">
       <el-form :model="searchResult" ref="searchResultRef" @submit.prevent>
         <el-form-item label="" prop="applyInfo">
-          <el-input type="textarea" :rows="5" clearable placeholder="请输入申请信息" v-model.trim="searchResult.reqMsg"
+          <el-input type="textarea" :rows=5 clearable placeholder="请输入申请信息" v-model.trim="searchResult.reqMsg"
             resize="none" show-word-limit maxlength="100"></el-input>
         </el-form-item>
       </el-form>
