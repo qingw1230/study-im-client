@@ -107,8 +107,8 @@ const partList = ref([
   },
   {
     partName: '我加入的群聊',
-    contactId: 'contactId',
-    contactName: 'contactName',
+    contactId: 'groupId',
+    contactName: 'groupName',
     showTitle: true,
     contactData: [],
     contactPath: '/contact/groupDetail',
@@ -172,7 +172,25 @@ const loadMyGroup = async () => {
 
 loadMyGroup()
 
-// contactDetail 获取联系人详细信息
+// loadJoinedGroup 获取创建的群聊
+const loadJoinedGroup = async () => {
+  let result = await proxy.Request({
+    url: proxy.Api.getJoinedGroupList,
+    params: {
+      fromUserId: userInfoStore.getInfo().userId,
+      roleLevel: 1
+    },
+    showLoading: false,
+  })
+  if (!result) {
+    return
+  }
+  partList.value[2].contactData = result.data
+}
+
+loadJoinedGroup()
+
+// contactDetail 获取联系人或群聊详细信息
 const contactDetail = (contact, part) => {
   if (part.showTitle) {
     rightTitle.value = contact[part.contactName]
@@ -202,14 +220,19 @@ watch(
       return
     }
     switch (newVal) {
-      case "MYGROUP":
-        loadMyGroup()
-        break
       case "USER":
         loadFriendList()
         break
       case "DELETE_FRIEND":
         loadFriendList()
+        router.push('/contact/blank')
+        rightTitle.value = null
+        break
+      case "MYGROUP":
+        loadMyGroup()
+        break
+      case "QUIT_GROUP":
+        loadJoinedGroup()
         router.push('/contact/blank')
         rightTitle.value = null
         break

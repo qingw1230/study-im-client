@@ -16,7 +16,7 @@
             <el-dropdown-item @click="deleteGroup"> 解散群聊 </el-dropdown-item>
           </el-dropdown-menu>
           <el-dropdown-menu v-else>
-            <el-dropdown-item @click="leaveGroup"> 退出群聊 </el-dropdown-item>
+            <el-dropdown-item @click="quitGroup"> 退出群聊 </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -82,6 +82,7 @@ const setGroupInfo = async () => {
   groupEditDialogRef.value.show(groupInfo.value)
 }
 
+// deleteGroup 解散群聊
 const deleteGroup = () => {
   proxy.Confirm({
     message: "解散群后你将失去和群友的联系，确定要解散吗？",
@@ -98,6 +99,37 @@ const deleteGroup = () => {
       }
       proxy.Message.success("解散成功")
       contactStateStore.setContactReload("DELETE_GROUP")
+    }
+  })
+}
+
+// quitGroup 退出群聊
+const quitGroup = () => {
+  proxy.Confirm({
+    message: "退出后不会通知群聊中其他成员，且不会再接收此群消息。",
+    okfun: async () => {
+      contactStateStore.setContactReload(null)
+      let result = await proxy.Request({
+        url: proxy.Api.quitGroup,
+        params: {
+          groupId: groupId.value
+        }
+      })
+      if (!result) {
+        return
+      }
+      proxy.Message.success("退出成功")
+      contactStateStore.setContactReload("QUIT_GROUP")
+    }
+  })
+}
+
+const sendMessage = () => {
+  router.push({
+    path: "/chat",
+    query: {
+      chatId: groupId.value,
+      timestamp: new Date().getTime(),
     }
   })
 }

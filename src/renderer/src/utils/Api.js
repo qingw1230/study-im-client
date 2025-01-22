@@ -11,6 +11,7 @@ const api = {
   addBlacklist: "/friend/add_blacklist",
   createGroup: "/group/create_group",
   deleteGroup: "/group/delete_group",
+  quitGroup: "/group/quit_group",
   getGroupInfo: "/group/get_group_info",
   setGroupInfo: "/group/set_group_info",
   getJoinedGroupList: "/group/get_joined_group_list",
