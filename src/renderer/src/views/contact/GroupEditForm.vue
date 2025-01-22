@@ -41,6 +41,7 @@ const submit = async () => {
     if (!valid) {
       return
     }
+    contactStateStore.setContactReload(null)
 
     if (formData.value.groupId) {
       let result = await proxy.Request({
@@ -75,7 +76,6 @@ const submit = async () => {
 
     formDataRef.value.resetFields()
     // 重新加载我的群聊列表
-    contactStateStore.setContactReload("")
     contactStateStore.setContactReload("MYGROUP")
   })
 }

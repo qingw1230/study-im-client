@@ -13,7 +13,7 @@
         <template #dropdown>
           <el-dropdown-menu v-if="groupInfo.ownerUserId == userInfoStore.getInfo().userId">
             <el-dropdown-item @click="setGroupInfo"> 修改群信息 </el-dropdown-item>
-            <el-dropdown-item @click="dissolutionGroup"> 解散群 </el-dropdown-item>
+            <el-dropdown-item @click="deleteGroup"> 解散群聊 </el-dropdown-item>
           </el-dropdown-menu>
           <el-dropdown-menu v-else>
             <el-dropdown-item @click="leaveGroup"> 退出群聊 </el-dropdown-item>
@@ -80,6 +80,26 @@ const getGroupInfo = async () => {
 const groupEditDialogRef = ref()
 const setGroupInfo = async () => {
   groupEditDialogRef.value.show(groupInfo.value)
+}
+
+const deleteGroup = () => {
+  proxy.Confirm({
+    message: "解散群后你将失去和群友的联系，确定要解散吗？",
+    okfun: async () => {
+      contactStateStore.setContactReload(null)
+      let result = await proxy.Request({
+        url: proxy.Api.deleteGroup,
+        params: {
+          groupId: groupId.value
+        }
+      })
+      if (!result) {
+        return
+      }
+      proxy.Message.success("解散成功")
+      contactStateStore.setContactReload("DELETE_GROUP")
+    }
+  })
 }
 
 // 当 route.query.contactId 发生变化时触发回调获取群信息

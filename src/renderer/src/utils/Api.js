@@ -10,9 +10,10 @@ const api = {
   getFriendList: "/friend/get_friend_list",
   addBlacklist: "/friend/add_blacklist",
   createGroup: "/group/create_group",
-  getJoinedGroupList: "/group/get_joined_group_list",
+  deleteGroup: "/group/delete_group",
   getGroupInfo: "/group/get_group_info",
-  setGroupInfo: "/group/set_group_info"
+  setGroupInfo: "/group/set_group_info",
+  getJoinedGroupList: "/group/get_joined_group_list",
 }
 
 export default api;

@@ -213,6 +213,11 @@ watch(
         router.push('/contact/blank')
         rightTitle.value = null
         break
+      case "DELETE_GROUP":
+        loadMyGroup()
+        router.push('/contact/blank')
+        rightTitle.value = null
+        break
       default:
         break
     }
