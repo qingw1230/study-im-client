@@ -68,7 +68,8 @@ instance.interceptors.response.use(
 );
 
 const request = (config) => {
-  const { url, params, dataType, showLoading = true, responseType = responseTypeJson, showError = true } = config;
+  // showLoading 若为 ture，当操作较快屏幕会闪烁，体验不好，需要时手动传入
+  const { url, params, dataType, showLoading = false, responseType = responseTypeJson, showError = true } = config;
   let contentType = contentTypeJson;
   const body = JSON.stringify(params);
   const token = localStorage.getItem('token')

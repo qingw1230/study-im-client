@@ -8,5 +8,5 @@
 import GroupEditForm from './GroupEditForm.vue';
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 </style>

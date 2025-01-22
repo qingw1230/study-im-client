@@ -3,7 +3,8 @@
     <div class="avatar-show">
       <template v-if="modelValue">
         <el-image v-if="preview" :src="localFile" fit="scale-down"></el-image>
-        <ShowLocalImage :fileId="props.modelValue" partType="avatar" :width="40" v-else></ShowLocalImage>
+        <ShowLocalImage partType="avatar" :width="40" v-else></ShowLocalImage>
+        <!-- <ShowLocalImage :fileId="props.modelValue" partType="avatar" :width="40" v-else></ShowLocalImage> -->
       </template>
       <template v-else>
         <el-upload name="file" :show-file-list="false" accept=".png,.PNG,.jpg,.JPG,.jpeg,.JPEG,.gif,.GIF,.bmp,.BMP"

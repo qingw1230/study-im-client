@@ -181,7 +181,7 @@ const contactDetail = (contact, part) => {
   }
 
   let userId
-  if (part.partName = '我的好友') {
+  if (part.partName == '我的好友') {
     userId = contact[part.contactInfo][part.contactId]
   } else {
     userId = contact[part.contactId]
@@ -212,6 +212,8 @@ watch(
         loadFriendList()
         router.push('/contact/blank')
         rightTitle.value = null
+        break
+      default:
         break
     }
   },

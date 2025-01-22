@@ -1,6 +1,7 @@
 <template>
   <div class="content-panel" :style="{ 'border-top': showTopBorder ? '1px solid #ddd' : 'none' }">
     <div class="content-inner">
+      <!-- 其他使用 ContentPanel 的部分将内容插到 slot 中 -->
       <slot></slot>
     </div>
   </div>
