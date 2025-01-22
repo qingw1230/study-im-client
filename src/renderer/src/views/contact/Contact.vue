@@ -74,7 +74,7 @@ const partList = ref([
     partName: '新朋友',
     children: [
       {
-        name: '搜好友',
+        name: '添加朋友',
         icon: 'icon-search',
         iconBgColor: '#fa9d3b',
         path: '/contact/search'
@@ -83,7 +83,15 @@ const partList = ref([
         name: '新的朋友',
         icon: 'icon-plane',
         iconBgColor: '#08bf61',
-        path: '/contact/contactNotice',
+        path: '/contact/friendApplyNotice',
+        showTitle: true,
+        countKey: 'contactApplyCount'
+      },
+      {
+        name: '群聊通知',
+        icon: 'icon-plane',
+        iconBgColor: '#3da3fd',
+        path: '/contact/groupApplyNotice',
         showTitle: true,
         countKey: 'contactApplyCount'
       }

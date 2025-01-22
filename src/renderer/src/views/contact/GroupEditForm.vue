@@ -8,7 +8,7 @@
       <AvatarUpload v-model="formData.avatarFile" ref="avatarUploadRef" @coverFile="saveCover"></AvatarUpload>
     </el-form-item>
     <el-form-item label="群介绍" prop="introduction">
-      <el-input clearable placeholder="添写群介绍，1-255字" v-model.trim="formData.introduction" type="textarea" rows=5
+      <el-input clearable placeholder="添写群介绍，1-255字" v-model.trim="formData.introduction" type="textarea" :rows="5"
         maxlength="255" :show-word-limit="true" resize="none"></el-input>
     </el-form-item>
     <el-form-item>
@@ -78,6 +78,9 @@ const submit = async () => {
     // 重新加载我的群聊列表
     contactStateStore.setContactReload("MYGROUP")
   })
+}
+
+const saveCover = () => {
 }
 
 const show = (data) => {
