@@ -23,7 +23,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick } from 'vue'
+import { progressProps } from 'element-plus'
+import { ref, reactive, getCurrentInstance, nextTick, computed } from 'vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -32,6 +33,10 @@ const prpos = defineProps({
     type: [String, Object],
     default: null
   }
+})
+
+const preview = computed(() => {
+  return progressProps.modelValue instanceof File
 })
 
 const uploadImage = async (file) => {
