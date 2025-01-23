@@ -228,7 +228,7 @@ watch(
       return
     }
     switch (newVal) {
-      case "USER":
+      case "FRIEND_LIST":
         loadFriendList()
         break
       case "DELETE_FRIEND":

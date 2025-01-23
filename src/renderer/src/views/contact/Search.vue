@@ -1,13 +1,14 @@
 <template>
   <ContentPanel>
     <div class="search-form">
-      <el-input clearable placeholder="请输入用户 ID" v-model="contactId" size="large" @keydown.enter="search"></el-input>
+      <el-input minlength="1" maxlength="12" clearable placeholder="请输入用户 ID" v-model="contactId" size="large"
+        @keydown.enter="search"></el-input>
       <div class="search-btn iconfont icon-search" @click="search"></div>
     </div>
     <div v-if="searchResult && Object.keys(searchResult).length > 0" class="search-result-panel">
       <div class="search-result">
         <span class="contact-type"> {{ contactTypeName }} </span>
-        <UserBaseInfo :userInfo="searchResult" :showArea="true"></UserBaseInfo> 
+        <UserBaseInfo :userInfo="searchResult" :showArea="true"></UserBaseInfo>
       </div>
       <div class="op-btn" v-if="searchResult.userId != userInfoStore.getInfo().userId">
         <el-button type="primary" v-if="searchResult.isFriend == true" @click="sendMessage"> 发消息 </el-button>
