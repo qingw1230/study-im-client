@@ -32,11 +32,15 @@
     <div v-if="showType == 1">
       <UserInfoEdit :data="selfUserInfo" @editBack="editBack"></UserInfoEdit>
     </div>
+    <div v-if="showType == 2">
+      <UserInfoPassword @editBack="editBack"></UserInfoPassword>
+    </div>
   </ContentPanel>
 </template>
 
 <script setup>
 import UserInfoEdit from './UserInfoEdit.vue'
+import UserInfoPassword from './UserInfoPassword.vue'
 import { ref, reactive, getCurrentInstance, nextTick, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserInfoStore } from '@/stores/UserInfoStore'

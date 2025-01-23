@@ -134,7 +134,7 @@ const submit = async () => {
   if (!isLogin.value && !checkValue(null, formData.value.nickName, "请输入昵称")) {
     return
   }
-  if (!checkValue("checkPassword", formData.value.password, "密码只能是的数字、字符和符号长度8~18位")) {
+  if (!checkValue("checkPassword", formData.value.password, "密码只能是数字、字符和符号长度8~18位")) {
     return
   }
   if (!isLogin.value && formData.value.password != formData.value.rePassword) {
