@@ -5,7 +5,7 @@
     <div v-if="showLoading" class="loading-panel">
       <img src="../assets/img/loading.gif" />
     </div>
-    <div class="login-form" v-else>
+    <div v-else class="login-form">
       <div class="error-msg"> {{ errorMsg }} </div>
       <el-form :model="formData" ref="formDataRef" label-width="0px" @submit.prevent>
         <el-form-item prop="email">
@@ -17,7 +17,7 @@
           </el-input>
         </el-form-item>
         <!-- v-if 判断不是登录时才显示 -->
-        <el-form-item prop="nickName" v-if="!isLogin">
+        <el-form-item v-if="!isLogin" prop="nickName">
           <el-input size="large" clearable placeholder="请输入昵称" maxLength="15" v-model.trim="formData.nickName"
             @focus="cleanVerify">
             <template #prefix>
@@ -33,7 +33,7 @@
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="rePassword" v-if="!isLogin">
+        <el-form-item v-if="!isLogin" prop="rePassword">
           <el-input size="large" show-password placeholder="请再次输入密码" v-model.trim="formData.rePassword"
             @focus="cleanVerify">
             <template #prefix>
@@ -52,14 +52,10 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn" @click="submit">
-            {{ isLogin ? '登录' : '立即注册' }}
-          </el-button>
+          <el-button type="primary" class="login-btn" @click="submit"> {{ isLogin ? '登录' : '立即注册' }} </el-button>
         </el-form-item>
         <div class="bottom-link">
-          <span class="a-link" @click="changeOpType">
-            {{ isLogin ? '注册账号' : '账密登录' }}
-          </span>
+          <span class="a-link" @click="changeOpType"> {{ isLogin ? '注册账号' : '账密登录' }} </span>
         </div>
       </el-form>
     </div>
@@ -68,25 +64,26 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, onMounted } from "vue"
+import { ref, reactive, getCurrentInstance, nextTick } from "vue"
 import { useUserInfoStore } from '@/stores/UserInfoStore'
 import { useRouter } from 'vue-router'
 import { dataType } from "element-plus/es/components/table-v2/src/common.mjs"
 
+const { proxy } = getCurrentInstance()
 const router = useRouter()
 const userInfoStore = useUserInfoStore()
-const { proxy } = getCurrentInstance()
 const formData = ref({})
 const formDataRef = ref()
 
 const isLogin = ref(true)
+// changeOpType 切换登录/注册
 const changeOpType = () => {
   window.ipcRenderer.send("loginOrRegister", !isLogin.value)
   isLogin.value = !isLogin.value
-  // 切换时清空输入框数据
   nextTick(() => {
     formDataRef.value.resetFields()
     formData.value = {}
+    changeCheckCode()
     cleanVerify()
   })
 }
@@ -120,11 +117,13 @@ const checkValue = (type, value, msg) => {
   return true
 }
 
+// cleanVerify 清空错误消息
 const cleanVerify = () => {
   errorMsg.value = null
 }
 
 const showLoading = ref(false)
+// submit 登录或注册按钮
 const submit = async () => {
   cleanVerify()
   if (!checkValue("checkEmail", formData.value.email, "请输入正确的邮箱")) {
@@ -167,7 +166,6 @@ const submit = async () => {
       errorMsg.value = response.info
     }
   })
-
   if (!result) {
     return
   }
@@ -203,16 +201,6 @@ const submit = async () => {
     changeOpType()
   }
 }
-
-const init = () => {
-  window.ipcRenderer.on("getLocalStoreCallback", (e, data) => {
-    console.log(data)
-  })
-}
-
-onMounted(() => {
-  init()
-})
 
 </script>
 

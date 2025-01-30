@@ -30,17 +30,9 @@ const onSetLocalStore = () => {
   })
 }
 
-const onGetLocalStore = () => {
-  ipcMain.on("getLocalStore", (e, key) => {
-    console.log("收到渲染进程的获取事件 key:", key)
-    e.sender.send("getLocalStoreCallback", "主进程返回的内容：" + store.getData(key))
-  })
-}
-
 export {
   onLoginOrRegister,
   onLoginSuccess,
   onWinTitleOp,
   onSetLocalStore,
-  onGetLocalStore,
 }

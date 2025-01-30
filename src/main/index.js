@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 const NODE_ENV = process.env.NODE_ENV
-import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore } from './ipc'
+import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore } from './ipc'
 
 const login_width = 300;
 const login_height = 370;
@@ -149,15 +149,10 @@ app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
