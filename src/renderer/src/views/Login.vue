@@ -8,7 +8,6 @@
     <div class="login-form" v-else>
       <div class="error-msg"> {{ errorMsg }} </div>
       <el-form :model="formData" ref="formDataRef" label-width="0px" @submit.prevent>
-        <!-- input 输入 -->
         <el-form-item prop="email">
           <el-input size="large" clearable placeholder="请输入邮箱" maxLength="30" v-model.trim="formData.email"
             @focus="cleanVerify">

@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 const NODE_ENV = process.env.NODE_ENV
-import { onLoginOrRegister, onLoginSuccess, winTitleOp, onSetLocalStore, onGetLocalStore } from './ipc'
+import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore } from './ipc'
 
 const login_width = 300;
 const login_height = 370;
@@ -97,7 +97,7 @@ function createWindow() {
     // TODO(qingw1230): 管理后台的窗口
   })
 
-  winTitleOp((e, { action, data }) => {
+  onWinTitleOp((e, { action, data }) => {
     const webContents = e.sender
     const win = BrowserWindow.fromWebContents(webContents)
     switch (action) {
@@ -125,8 +125,8 @@ function createWindow() {
       case "top": {
         win.setAlwaysOnTop(data.top);
       }
-    };
-  });
+    }
+  })
 
   onSetLocalStore()
   onGetLocalStore()
@@ -163,6 +163,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

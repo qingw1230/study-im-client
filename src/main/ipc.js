@@ -1,8 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-const NODE_ENV = process.env.NODE_ENV
+import { ipcMain } from 'electron'
 import store from './store'
 
 const onLoginOrRegister = (callback) => {
@@ -22,10 +18,10 @@ const onLoginSuccess = (callback) => {
   })
 }
 
-const winTitleOp = (callback) => {
+const onWinTitleOp = (callback) => {
   ipcMain.on("winTitleOp", (e, data) => {
     callback(e, data)
-  });
+  })
 }
 
 const onSetLocalStore = () => {
@@ -44,7 +40,7 @@ const onGetLocalStore = () => {
 export {
   onLoginOrRegister,
   onLoginSuccess,
-  winTitleOp,
+  onWinTitleOp,
   onSetLocalStore,
   onGetLocalStore,
 }

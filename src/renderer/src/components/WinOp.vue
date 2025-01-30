@@ -10,9 +10,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, onMounted } from 'vue'
-
-const { proxy } = getCurrentInstance()
+import { ref } from 'vue'
 
 const props = defineProps({
   showSetTop: {
@@ -38,12 +36,6 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['closeCallback'])
-
-onMounted(() => {
-  isMax.value = false
-})
-
 // 窗口操作
 const winOp = (action, data) => {
   window.ipcRenderer.send('winTitleOp', { action, data })
@@ -52,7 +44,6 @@ const winOp = (action, data) => {
 // 关闭窗口
 const close = () => {
   winOp('close', { closeType: props.closeType })
-  emit('closeCallback')
 }
 
 // 最小化

@@ -16,6 +16,6 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
-  window.electron = electronAPI
+  window.Electron = electronAPI
   window.api = api
 }
