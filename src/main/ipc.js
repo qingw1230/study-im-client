@@ -23,13 +23,28 @@ const onLoginSuccess = (callback) => {
 }
 
 const winTitleOp = (callback) => {
-    ipcMain.on("winTitleOp", (e, data) => {
-        callback(e, data)
-    });
+  ipcMain.on("winTitleOp", (e, data) => {
+    callback(e, data)
+  });
+}
+
+const onSetLocalStore = () => {
+  ipcMain.on("setLocalStore", (e, {key, value}) => {
+    store.setData(key, value)
+  })
+}
+
+const onGetLocalStore = () => {
+  ipcMain.on("getLocalStore", (e, key) => {
+    console.log("收到渲染进程的获取事件 key:", key)
+    e.sender.send("getLocalStoreCallback", "主进程返回的内容：" + store.getData(key))
+  })
 }
 
 export {
   onLoginOrRegister,
   onLoginSuccess,
   winTitleOp,
+  onSetLocalStore,
+  onGetLocalStore,
 }
