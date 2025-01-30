@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron'
 import store from './store'
+import { initWs } from './wsClient'
 
 const onLoginOrRegister = (callback) => {
   ipcMain.on("loginOrRegister", (e, isLogin) => {
@@ -14,7 +15,7 @@ const onLoginSuccess = (callback) => {
     store.setUserData("token", config.token)
     callback(config);
 
-    // TODO(qingw1230): 初始化 ws 连接
+    initWs(config, e.sender)
   })
 }
 
