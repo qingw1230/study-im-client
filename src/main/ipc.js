@@ -30,9 +30,16 @@ const onSetLocalStore = () => {
   })
 }
 
+const onGetLocalStore = () => {
+  ipcMain.on("getLocalStore", (e, key) => {
+    e.sender.send("getLocalStoreCallback", "这是主进程加的内容：" + store.getData(key))
+  })
+}
+
 export {
   onLoginOrRegister,
   onLoginSuccess,
   onWinTitleOp,
   onSetLocalStore,
+  onGetLocalStore,
 }

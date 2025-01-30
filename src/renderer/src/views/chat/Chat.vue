@@ -14,12 +14,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, watch } from 'vue'
+import { ref, reactive, getCurrentInstance, nextTick, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
+
 </script>
 
 <style lang="scss" scoped>

@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick } from "vue"
+import { ref, reactive, getCurrentInstance, nextTick, onMounted } from "vue"
 import { useUserInfoStore } from '@/stores/UserInfoStore'
 import { useRouter } from 'vue-router'
 import { dataType } from "element-plus/es/components/table-v2/src/common.mjs"
@@ -190,18 +190,22 @@ const submit = async () => {
       screenHeight: screenHeight,
     })
 
-    window.ipcRenderer.send("setLocalStore", {
-      key: "devWsDomain",
-      value: proxy.Api.devWsDomain,
-    })
-
-    window.ipcRenderer.send("getLocalStore", "devWsDomain")
   } else {
     proxy.Message.success('注册成功')
     changeOpType()
   }
 }
 
+const init = () => {
+  window.ipcRenderer.send("setLocalStore", { key: "prodDomain", value: proxy.Api.prodDomain })
+  window.ipcRenderer.send("setLocalStore", { key: "devDomain", value: proxy.Api.devDomain })
+  window.ipcRenderer.send("setLocalStore", { key: "prodWsDomain", value: proxy.Api.prodWsDomain })
+  window.ipcRenderer.send("setLocalStore", { key: "devWsDomain", value: proxy.Api.devWsDomain })
+}
+
+onMounted(() => {
+  init()
+})
 </script>
 
 <style lang="scss" scoped>
