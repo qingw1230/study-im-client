@@ -73,16 +73,15 @@ const createWs = (config) => {
   }
 
   const heartBeatData = {
-    reqIdentifier: 1003,
+    reqIdentifier: 1000,
     sendId: config.userId,
   }
   const jsonHeartBeatData = JSON.stringify(heartBeatData)
 
   setInterval(() => {
     if (ws != null && ws.readyState == 1) {
-      console.log("发送心跳")
       ws.send(jsonHeartBeatData)
-    } 
+    }
   }, 5000)
 }
 
