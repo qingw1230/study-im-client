@@ -12,16 +12,18 @@ let needReconnect = null
 let maxReconnectTimes = null
 let lockReconnect = false
 let heartBeatTimer = null
+let globalUserId = null
 
 const initWs = (config, _sender) => {
   wsUrl = `${NODE_ENV !== 'development' ? store.getData("prodWsDomain") : store.getData("devWsDomain")}?token=${config.token}&sendId=${config.userId}`
   sender = _sender
   needReconnect = true
   maxReconnectTimes = 5
-  createWs(config.userId)
+  globalUserId = config.userId
+  createWs()
 }
 
-const createWs = (userId) => {
+const createWs = () => {
   if (wsUrl == null) {
     return
   }
@@ -34,6 +36,7 @@ const createWs = (userId) => {
 
   ws = new WebSocket(wsUrl)
   ws.onopen = function () {
+    pullConversationList()
     console.log("客户端 ws 连接成功")
     maxReconnectTimes = 5
   }
@@ -73,7 +76,7 @@ const createWs = (userId) => {
       maxReconnectTimes--
 
       setTimeout(() => {
-        createWs(userId)
+        createWs()
         lockReconnect = false
       }, 1000 * 50)
     } else {
@@ -83,7 +86,7 @@ const createWs = (userId) => {
 
   const heartBeatData = {
     reqIdentifier: 1000,
-    sendId: userId,
+    sendId: globalUserId,
   }
   const jsonHeartBeatData = JSON.stringify(heartBeatData)
 
@@ -103,6 +106,27 @@ const closeWs = () => {
   if (ws) {
     ws.close()
   }
+}
+
+// pullConversationList 拉取会话列表信息
+function pullConversationList() {
+  let toJsonData = {
+    "opUserId": globalUserId,
+    "fromUserId": globalUserId,
+  }
+  let req = {
+    "reqIdentifier": 1004,
+    "sendId": globalUserId,
+    "data": toJsonAndToBase64(toJsonData),
+  }
+  ws.send(JSON.stringify(req))
+}
+
+// jsonMarshalAndToBase64 使用 JSON 序列化并编码为 Base64 格式
+function toJsonAndToBase64(jsonData) {
+  const jsonString = JSON.stringify(jsonData);
+  const base64String = btoa(jsonString);
+  return base64String;
 }
 
 export {
