@@ -1,6 +1,8 @@
 import WebSocket from "ws"
 import store from "./store"
 
+import { createTable } from "./db/ADB"
+
 const NODE_ENV = process.env.NODE_ENV
 
 let ws = null
@@ -73,7 +75,7 @@ const createWs = (userId) => {
       setTimeout(() => {
         createWs(userId)
         lockReconnect = false
-      }, 5000)
+      }, 1000 * 50)
     } else {
       console.log("连接超时")
     }
