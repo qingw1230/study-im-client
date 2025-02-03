@@ -2,6 +2,7 @@ import { ipcMain } from 'electron'
 import store from './store'
 import { initWs } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
+import { selectUserConversationList, delChatConversation, topChatConversation } from './db/ConversationModel'
 
 const onLoginOrRegister = (callback) => {
   ipcMain.on("loginOrRegister", (e, isLogin) => {
@@ -27,7 +28,7 @@ const onWinTitleOp = (callback) => {
 }
 
 const onSetLocalStore = () => {
-  ipcMain.on("setLocalStore", (e, {key, value}) => {
+  ipcMain.on("setLocalStore", (e, { key, value }) => {
     store.setData(key, value)
   })
 }
@@ -38,10 +39,32 @@ const onGetLocalStore = () => {
   })
 }
 
+const onLoadConversationData = () => {
+  ipcMain.on("loadConversationData", async (e) => {
+    const ans = await selectUserConversationList()
+    e.sender.send("loadConversationDataCallback", ans)
+  })
+}
+
+const onTopChatConversation = () => {
+  ipcMain.on("topChatConversation", (e, {conversationId, topType}) => {
+    topChatConversation(conversationId, topType)
+  })
+}
+
+const onDelChatConversation = () => {
+  ipcMain.on("delChatConversation", (e, conversationId) => {
+    delChatConversation(conversationId)
+  })
+}
+
 export {
   onLoginOrRegister,
   onLoginSuccess,
   onWinTitleOp,
   onSetLocalStore,
   onGetLocalStore,
+  onLoadConversationData,
+  onTopChatConversation,
+  onDelChatConversation,
 }

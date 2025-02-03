@@ -9,17 +9,133 @@
           </template>
         </el-input>
       </div>
+      <div class="chat-session-list">
+        <template v-for="item in chatConversationList">
+          <ChatConversation :data="item" @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
+        </template>
+      </div>
+    </template>
+    <template #right-content>
+
     </template>
   </Layout>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, watch, onMounted } from 'vue'
+import ContextMenu from '@imengyu/vue3-context-menu'
+import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
+import ChatConversation from './ChatConversation.vue'
+import { ref, reactive, getCurrentInstance, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
+
+const searchKey = ref()
+const search = ref()
+
+const chatConversationList = ref([])
+
+const onReceiveMessage = () => {
+  window.ipcRenderer.on("receiveMessage", (e, message) => {
+    console.log("收到消息", message)
+    switch (message.messageType) {
+      case 1000:
+        break
+      case 1004:
+        loadChatConversion()
+        break
+    }
+  })
+}
+
+const onLoadConversationData = () => {
+  window.ipcRenderer.on("loadConversationDataCallback", (e, dataList) => {
+    sortChatConversationList(dataList)
+    chatConversationList.value = dataList
+  })
+}
+
+const loadChatConversion = () => {
+  window.ipcRenderer.send("loadConversationData")
+}
+
+// sortChatConversationList 会话排序
+const sortChatConversationList = (dataList) => {
+  dataList.sort((a, b) => {
+    const topTypeResult = b['topType'] - a['topType']
+    if (topTypeResult == 0) {
+      return b['lastMessageTime'] - a['lastMessageTime']
+    }
+    return topTypeResult
+  })
+}
+
+// delChatConversationList 删除会话
+const delChatConversationList = (conversationId) => {
+  chatConversationList.value = chatConversationList.value.filter((item) => {
+    return item.conversationId !== conversationId
+  })
+}
+
+const currentChatConversation = ref({})
+
+onMounted(() => {
+  onReceiveMessage()
+  onLoadConversationData()
+
+  loadChatConversion()
+})
+
+onUnmounted(() => {
+  window.ipcRenderer.removeAllListeners("receiveMessage")
+  window.ipcRenderer.removeAllListeners("loadConversationDataCallback")
+})
+
+const setTop = (data) => {
+  data.topType = data.topType == 0 ? 1 : 0
+  sortChatConversationList(chatConversationList.value)
+  window.ipcRenderer.send("topChatConversation", {
+    conversationId: data.conversationId,
+    topType: data.topType,
+  })
+}
+
+const delChatConversation = (conversationId) => {
+  delChatConversationList(conversationId)
+  currentChatConversation.value = {}
+  window.ipcRenderer.send("delChatConversation", conversationId)
+}
+
+// onContextMenu 右键
+const onContextMenu = (data, event) => {
+  ContextMenu.showContextMenu({
+    x: event.x,
+    y: event.y,
+    items: [
+      {
+        label: data.topType == 0 ? "置顶" : "取消置顶",
+        onClick: () => {
+          setTop(data)
+        }
+      },
+      {
+        label: "删除聊天",
+        onClick: () => {
+          proxy.Confirm({
+            message: `确定要从消息列表中移除 ${data.conversationName} 吗？`,
+            okfun: () => { 
+              delChatConversation(data.conversationId)
+            },
+          })
+        }
+      },
+
+    ]
+  })
+}
 
 </script>
 

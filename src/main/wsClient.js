@@ -64,6 +64,8 @@ const createWs = () => {
     }
 
     switch (message.reqIdentifier) {
+      case 1000:
+        break
       case 1001:
         let { localSeq } = await selectUserLocalSeqByUserId(globalUserId)
         let newestSeq = payload.newestSeq 
@@ -73,10 +75,12 @@ const createWs = () => {
         break
       case 1002:
         await saveChatLogBatch(payload.list)
+        sender.send("receiveMessage", { messageType: 1002 })
         break
       case 1004:
         if (payload && payload.conversationList) {
           await saveOrUpdateConversationBatchForInit(payload.conversationList)
+          sender.send("receiveMessage", { messageType: 1004 })
         }
         break
     }

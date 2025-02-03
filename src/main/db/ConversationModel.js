@@ -1,12 +1,6 @@
 import { run, queryCount, queryOne, queryAll, insertOrReplace, update, insertOrIgnore } from "./ADB";
 import store from "../store"
 
-
-const selectUserConversationByConversationId = (conversationId) => {
-  let sql = "select * from conversations where conversation_id = ?"
-  return queryOne(sql, [conversationId])
-}
-
 const addConversation = (conversationInfo) => {
   insertOrIgnore("conversations", conversationInfo)
 }
@@ -46,7 +40,40 @@ const updateNoReadCount = (conversationId, noReadCount) => {
   return run(sql, [noReadCount, conversationId])
 }
 
+const selectUserConversationList = () => {
+  let sql = "select * from conversations where owner_user_id = ? and status = 1"
+  return queryAll(sql, [store.getUserId()])
+}
+
+const selectUserConversationByConversationId = (conversationId) => {
+  let sql = "select * from conversations where conversation_id = ?"
+  return queryOne(sql, [conversationId])
+}
+
+const topChatConversation = (conversationId, topType) => {
+  const paramData = {
+    conversationId,
+  }
+  const conversationInfo = {
+    topType,
+  }
+  return update("conversations", conversationInfo, paramData)
+}
+
+const delChatConversation = (conversationId) => {
+  const paramData = {
+    conversationId,
+  }
+  const conversationInfo = {
+    status: 0,
+  }
+  return update("conversations", conversationInfo, paramData)
+}
+
 export {
   saveOrUpdateConversationBatchForInit,
   updateNoReadCount,
+  selectUserConversationList,
+  topChatConversation,
+  delChatConversation,
 }

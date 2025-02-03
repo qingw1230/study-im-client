@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, Menu, Tray } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore } from './ipc'
+import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore, onLoadConversationData, onDelChatConversation, onTopChatConversation } from './ipc'
 
 const NODE_ENV = process.env.NODE_ENV
 const login_width = 300;
@@ -90,7 +90,7 @@ function createWindow() {
     mainWindow.setMinimumSize(800, 600)
     contextMenu.unshift({
       label: "用户: " + config.nickName,
-      click: function() {
+      click: function () {
       }
     })
     tray.setContextMenu(Menu.buildFromTemplate(contextMenu))
@@ -130,6 +130,9 @@ function createWindow() {
 
   onSetLocalStore()
   onGetLocalStore()
+  onLoadConversationData()
+  onTopChatConversation()
+  onDelChatConversation()
 }
 
 // This method will be called when Electron has finished
