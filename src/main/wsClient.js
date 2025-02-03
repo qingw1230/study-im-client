@@ -2,8 +2,9 @@ import WebSocket from "ws"
 import store from "./store"
 
 import { createTable } from "./db/ADB"
-import { saveOrUpdateChatLogBatchForInit } from "./db/ConversationModel"
-import { selectUserLocalSeqByUserId } from "./db/UserSettingModel"
+import { saveOrUpdateConversationBatchForInit } from "./db/ConversationModel"
+import { selectUserLocalSeqByUserId, updateUserLocalSeqByUserId } from "./db/UserSettingModel"
+import { saveChatLogBatch } from "./db/ChatLogModel"
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -64,17 +65,20 @@ const createWs = () => {
 
     switch (message.reqIdentifier) {
       case 1001:
-        let {localSeq} = await selectUserLocalSeqByUserId(globalUserId)
+        let { localSeq } = await selectUserLocalSeqByUserId(globalUserId)
         let newestSeq = payload.newestSeq 
         if (newestSeq > localSeq) {
           pullChatLogList(generateArray(localSeq, newestSeq))
         }
+        break
       case 1002:
-        console.log(payload)
+        await saveChatLogBatch(payload.list)
+        break
       case 1004:
         if (payload && payload.conversationList) {
-          await saveOrUpdateChatLogBatchForInit(payload.conversationList)
+          await saveOrUpdateConversationBatchForInit(payload.conversationList)
         }
+        break
     }
   }
 

@@ -38,7 +38,7 @@ const add_tables = [
   "   user_id varchar(12) not null," +
   "   email varchar(50) not null," +
   "   local_seq bigint not null default 0," + 
-  "   contact_no_read integer," +
+  "   contact_no_read integer not null default 0," +
   "   server_port integer," +
   "   primary key (user_id)" +
   ");"

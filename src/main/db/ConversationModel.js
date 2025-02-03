@@ -1,9 +1,9 @@
-import { queryCount, queryOne, queryAll, insertOrReplace, update, insertOrIgnore } from "./ADB";
+import { run, queryCount, queryOne, queryAll, insertOrReplace, update, insertOrIgnore } from "./ADB";
 import store from "../store"
 
 
 const selectUserConversationByConversationId = (conversationId) => {
-  let sql = "select * from conversations where conversation_id = ?";
+  let sql = "select * from conversations where conversation_id = ?"
   return queryOne(sql, [conversationId])
 }
 
@@ -19,8 +19,7 @@ const updateConversation = (conversationInfo) => {
   return update("conversations", updateInfo, paramData)
 }
 
-const saveOrUpdateChatLogBatchForInit = (conversationList) => {
-  console.log(conversationList)
+const saveOrUpdateConversationBatchForInit = (conversationList) => {
   return new Promise(async (resolve, reject) => {
     try {
       for (let i = 0; i < conversationList.length; i++) {
@@ -41,6 +40,13 @@ const saveOrUpdateChatLogBatchForInit = (conversationList) => {
   })
 }
 
+// updateNoReadCount 更新未读数
+const updateNoReadCount = (conversationId, noReadCount) => {
+  let sql = "update conversations set no_read_count = no_read_count + ? where conversation_id = ?"
+  return run(sql, [noReadCount, conversationId])
+}
+
 export {
-  saveOrUpdateChatLogBatchForInit,
+  saveOrUpdateConversationBatchForInit,
+  updateNoReadCount,
 }
