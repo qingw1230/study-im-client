@@ -2,6 +2,7 @@ import WebSocket from "ws"
 import store from "./store"
 
 import { createTable } from "./db/ADB"
+import { saveOrUpdateChatLogBatchForInit } from "./db/ConversationModel"
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -42,13 +43,28 @@ const createWs = () => {
   }
 
   // 从服务器收到消息的回调函数
-  ws.onmessage = function (event) {
+  ws.onmessage = async function (event) {
     console.log("Received message:", event.data)
-    const message = JSON.parse(event.data)
+    let message = JSON.parse(event.data)
+    if (message.code != 200) {
+      console.log("数据异常")
+      return
+    }
+
+    let payload = null
+    if (message.data) {
+      try {
+        payload = base64ToJSON(message.data);
+      } catch (error) {
+        console.error("Error decoding or parsing JSON:", error);
+      }
+    }
+
     switch (message.reqIdentifier) {
       case 1004:
-        console.log("收到拉取会话列表的响应")
-        console.log(base64ToJSON(message.data))
+        if (payload && payload.conversationList) {
+          await saveOrUpdateChatLogBatchForInit(payload.conversationList)
+        }
     }
   }
 
@@ -136,6 +152,9 @@ function jsonToBase64(jsonData) {
 
 // base64ToJSON 使用 Base64 解码并反序列化为 JSON 对象
 function base64ToJSON(base64String) {
+  if (!base64String) {
+    return
+  }
   const jsonString = Buffer.from(base64String, 'base64').toString('utf8');
   const jsonData = JSON.parse(jsonString);
   return jsonData;

@@ -35,9 +35,6 @@ const run = (sql, params) => {
       if (err) {
         resolve("操作数据库失败")
       }
-      row.forEach((item, index) => {
-        row[index] = convertDbObj2BizObj(item)
-      })
       resolve(this.changes)
     })
     stmt.finalize()

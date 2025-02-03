@@ -31,6 +31,7 @@ const add_tables = [
   "   top_type integer default 0," +
   "   last_message varchar(1024)," +
   "   last_message_time bigint," +
+  "   status integer default 1," +
   "   primary key (owner_user_id, conversation_id)" +
   ");",
   "create table if not exists user_settings (" +
