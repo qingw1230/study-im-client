@@ -38,6 +38,7 @@ const createWs = () => {
   ws = new WebSocket(wsUrl)
   ws.onopen = function () {
     pullConversationList()
+    pullChatLogList()
     console.log("客户端 ws 连接成功")
     maxReconnectTimes = 5
   }
@@ -61,6 +62,8 @@ const createWs = () => {
     }
 
     switch (message.reqIdentifier) {
+      case 1002:
+        console.log(payload)
       case 1004:
         if (payload && payload.conversationList) {
           await saveOrUpdateChatLogBatchForInit(payload.conversationList)
@@ -132,13 +135,28 @@ const closeWs = () => {
 // pullConversationList 拉取会话列表信息
 function pullConversationList() {
   let toJsonData = {
-    "opUserId": globalUserId,
     "fromUserId": globalUserId,
+    "opUserId": globalUserId,
   }
   let req = {
     "reqIdentifier": 1004,
     "sendId": globalUserId,
     "data": jsonToBase64(toJsonData),
+  }
+  ws.send(JSON.stringify(req))
+}
+
+// pullChatLogList 拉取离线消息
+function pullChatLogList() {
+  let toJsonData = {
+    "userId": globalUserId,
+    "opUserId": globalUserId,
+    "seqList": [1, 18, 19],
+  }
+  let req = {
+    "reqIdentifier": 1002,
+    "sendId": globalUserId,
+    "data": jsonToBase64(toJsonData)
   }
   ws.send(JSON.stringify(req))
 }
