@@ -3,6 +3,7 @@ import store from "./store"
 
 import { createTable } from "./db/ADB"
 import { saveOrUpdateChatLogBatchForInit } from "./db/ConversationModel"
+import { selectUserLocalSeqByUserId } from "./db/UserSettingModel"
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -37,8 +38,8 @@ const createWs = () => {
 
   ws = new WebSocket(wsUrl)
   ws.onopen = function () {
+    getNewestSeq()
     pullConversationList()
-    pullChatLogList()
     console.log("客户端 ws 连接成功")
     maxReconnectTimes = 5
   }
@@ -62,6 +63,12 @@ const createWs = () => {
     }
 
     switch (message.reqIdentifier) {
+      case 1001:
+        let {localSeq} = await selectUserLocalSeqByUserId(globalUserId)
+        let newestSeq = payload.newestSeq 
+        if (newestSeq > localSeq) {
+          pullChatLogList(generateArray(localSeq, newestSeq))
+        }
       case 1002:
         console.log(payload)
       case 1004:
@@ -147,11 +154,11 @@ function pullConversationList() {
 }
 
 // pullChatLogList 拉取离线消息
-function pullChatLogList() {
+function pullChatLogList(seqList) {
   let toJsonData = {
     "userId": globalUserId,
     "opUserId": globalUserId,
-    "seqList": [1, 18, 19],
+    "seqList": seqList,
   }
   let req = {
     "reqIdentifier": 1002,
@@ -159,6 +166,24 @@ function pullChatLogList() {
     "data": jsonToBase64(toJsonData)
   }
   ws.send(JSON.stringify(req))
+}
+
+// getNewestSeq 获取当前用户最新的 seq
+function getNewestSeq() {
+  let req = {
+    "reqIdentifier": 1001,
+    "sendId": globalUserId,
+  }
+  ws.send(JSON.stringify(req))
+}
+
+// generateArray 生成一个数组 (start, end]
+function generateArray(start, end) {
+  let ans = [];
+  for (let i = start + 1; i <= end; i++) {
+    ans.push(i);
+  }
+  return ans;
 }
 
 // jsonToBase64 使用 JSON 序列化并编码为 Base64 格式
