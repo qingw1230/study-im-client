@@ -43,8 +43,13 @@ const createWs = () => {
 
   // 从服务器收到消息的回调函数
   ws.onmessage = function (event) {
+    console.log("Received message:", event.data)
     const message = JSON.parse(event.data)
-    console.log("Received message:", message)
+    switch (message.reqIdentifier) {
+      case 1004:
+        console.log("收到拉取会话列表的响应")
+        console.log(base64ToJSON(message.data))
+    }
   }
 
   ws.onclose = function () {
@@ -78,7 +83,7 @@ const createWs = () => {
       setTimeout(() => {
         createWs()
         lockReconnect = false
-      }, 1000 * 50)
+      }, 1000 * 5)
     } else {
       console.log("连接超时")
     }
@@ -94,7 +99,7 @@ const createWs = () => {
     if (ws != null && ws.readyState === 1) {
       ws.send(jsonHeartBeatData)
     }
-  }, 5000)
+  }, 1000 * 50)
 }
 
 const closeWs = () => {
@@ -117,16 +122,23 @@ function pullConversationList() {
   let req = {
     "reqIdentifier": 1004,
     "sendId": globalUserId,
-    "data": toJsonAndToBase64(toJsonData),
+    "data": jsonToBase64(toJsonData),
   }
   ws.send(JSON.stringify(req))
 }
 
-// jsonMarshalAndToBase64 使用 JSON 序列化并编码为 Base64 格式
-function toJsonAndToBase64(jsonData) {
-  const jsonString = JSON.stringify(jsonData);
-  const base64String = btoa(jsonString);
-  return base64String;
+// jsonToBase64 使用 JSON 序列化并编码为 Base64 格式
+function jsonToBase64(jsonData) {
+  const jsonString = JSON.stringify(jsonData)
+  const base64String = btoa(jsonString)
+  return base64String
+}
+
+// base64ToJSON 使用 Base64 解码并反序列化为 JSON 对象
+function base64ToJSON(base64String) {
+  const jsonString = Buffer.from(base64String, 'base64').toString('utf8');
+  const jsonData = JSON.parse(jsonString);
+  return jsonData;
 }
 
 export {
