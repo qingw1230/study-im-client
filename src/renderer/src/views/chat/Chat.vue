@@ -11,7 +11,7 @@
       </div>
       <div class="chat-session-list">
         <template v-for="item in chatConversationList">
-          <ChatConversation :data="item" @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
+          <ChatConversation :data="item" @click="chatConversationClickHandler(item)" @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
         </template>
       </div>
     </template>
@@ -38,6 +38,60 @@ const search = ref()
 
 const chatConversationList = ref([])
 
+// sortChatConversationList 会话排序
+const sortChatConversationList = (dataList) => {
+  dataList.sort((a, b) => {
+    const topTypeResult = b['topType'] - a['topType']
+    if (topTypeResult == 0) {
+      return b['lastMessageTime'] - a['lastMessageTime']
+    }
+    return topTypeResult
+  })
+}
+
+// delChatConversationList 删除会话
+const delChatConversationList = (conversationId) => {
+  chatConversationList.value = chatConversationList.value.filter((item) => {
+    return item.conversationId !== conversationId
+  })
+}
+
+// currentChatConversation 当前选中的会话
+const currentChatConversation = ref({})
+const messageList = ref([])
+const messageCountInfo = {
+  totalPage: 0,
+  pageNo: 0,
+  maxMessageId: null,
+  noData: false,
+}
+
+// chatConversationClickHandler 点击会话
+const chatConversationClickHandler = (item) => {
+  currentChatConversation.value = Object.assign({}, item)
+  messageList.value = []
+  // TODO(qingw1230): 未读数的处理
+
+  loadChatMessage()
+}
+
+const loadChatConversion = () => {
+  window.ipcRenderer.send("loadConversationData")
+}
+
+const loadChatMessage = () => {
+  if (messageCountInfo.noData) {
+    return
+  }
+
+  messageCountInfo.pageNo++
+  window.ipcRenderer.send("loadChatMessage", {
+    conversationId: currentChatConversation.value.conversationId,
+    pageNo: messageCountInfo.pageNo,
+    maxMessageId: messageCountInfo.maxMessageId,
+  })
+}
+
 const onReceiveMessage = () => {
   window.ipcRenderer.on("receiveMessage", (e, message) => {
     console.log("收到消息", message)
@@ -58,33 +112,29 @@ const onLoadConversationData = () => {
   })
 }
 
-const loadChatConversion = () => {
-  window.ipcRenderer.send("loadConversationData")
-}
-
-// sortChatConversationList 会话排序
-const sortChatConversationList = (dataList) => {
-  dataList.sort((a, b) => {
-    const topTypeResult = b['topType'] - a['topType']
-    if (topTypeResult == 0) {
-      return b['lastMessageTime'] - a['lastMessageTime']
+const onLoadChatMessage = () => {
+  window.ipcRenderer.on("loadChatMessageCallback", (e, {dataList, pageTotal, pageNo}) => {
+    if (pageNo == pageTotal) {
+      messageCountInfo.noData = true
     }
-    return topTypeResult
+    dataList.sort((a, b) => {
+      return a.messageId - b.messageId
+    })
+    messageList.value = dataList.concat(messageList.value)
+    messageCountInfo.pageNo = pageNo
+    messageCountInfo.pageTotal = pageTotal
+    if (pageNo == 1) {
+      messageCountInfo.maxMessageId = dataList.length > 0 ? dataList[dataList.length - 1].seq : null
+    }
+    
+    console.log(messageList.value)
   })
 }
-
-// delChatConversationList 删除会话
-const delChatConversationList = (conversationId) => {
-  chatConversationList.value = chatConversationList.value.filter((item) => {
-    return item.conversationId !== conversationId
-  })
-}
-
-const currentChatConversation = ref({})
 
 onMounted(() => {
   onReceiveMessage()
   onLoadConversationData()
+  onLoadChatMessage()
 
   loadChatConversion()
 })
@@ -92,6 +142,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.ipcRenderer.removeAllListeners("receiveMessage")
   window.ipcRenderer.removeAllListeners("loadConversationDataCallback")
+  window.ipcRenderer.removeAllListeners("loadChatMessageCallback")
 })
 
 const setTop = (data) => {
@@ -126,7 +177,7 @@ const onContextMenu = (data, event) => {
         onClick: () => {
           proxy.Confirm({
             message: `确定要从消息列表中移除 ${data.conversationName} 吗？`,
-            okfun: () => { 
+            okfun: () => {
               delChatConversation(data.conversationId)
             },
           })

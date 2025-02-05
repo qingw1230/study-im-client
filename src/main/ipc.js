@@ -3,6 +3,7 @@ import store from './store'
 import { initWs } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
 import { selectUserConversationList, delChatConversation, topChatConversation } from './db/ConversationModel'
+import { selectMessageList } from './db/ChatLogModel'
 
 const onLoginOrRegister = (callback) => {
   ipcMain.on("loginOrRegister", (e, isLogin) => {
@@ -58,6 +59,13 @@ const onDelChatConversation = () => {
   })
 }
 
+const onLoadChatMessage = () => {
+  ipcMain.on("loadChatMessage", async (e, data) => {
+    const result = await selectMessageList(data)
+    e.sender.send("loadChatMessageCallback", result)
+  })
+}
+
 export {
   onLoginOrRegister,
   onLoginSuccess,
@@ -67,4 +75,5 @@ export {
   onLoadConversationData,
   onTopChatConversation,
   onDelChatConversation,
+  onLoadChatMessage,
 }

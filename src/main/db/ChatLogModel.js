@@ -3,6 +3,18 @@ import store from "../store"
 import { updateNoReadCount } from "./ConversationModel";
 import { selectUserLocalSeqByUserId, updateUserLocalSeqByUserId } from "./UserSettingModel";
 
+const getPageOffset = (pageNo = 1, totalCount) => {
+  const pageSize = 20;
+  const pageTotal = Number.parseInt((totalCount + pageSize - 1) / pageSize)
+  pageNo = pageNo <= 1 ? 1 : pageNo;
+  pageNo = pageNo >= pageTotal ? pageTotal : pageNo;
+  return {
+    pageTotal,
+    offset: (pageNo - 1) * pageSize,
+    limit: pageSize
+  }
+}
+
 const saveChatLog = (data) => {
   let contacdId = data.sessionType == 1 ? data.recvId : data.groupId
   data.recvId = contacdId
@@ -41,6 +53,28 @@ const saveChatLogBatch = (chatLogList) => {
   })
 }
 
+const selectMessageList = (query) => {
+  return new Promise(async (resolve, reject) => {
+    const { conversationId, pageNo, maxMessageId } = query
+    let sql = "select count(1) from chat_logs where conversation_id = ?"
+    const totalCount = await queryCount(sql, [conversationId])
+    const { pageTotal, offset, limit } = getPageOffset(pageNo, totalCount)
+
+    const params = [conversationId]
+    sql = "select * from chat_logs where conversation_id = ?"
+    if (maxMessageId) {
+      sql = sql + " and seq <= ?"
+      params.push(maxMessageId)
+    }
+    sql = sql + " order by seq desc limit ?,?"
+    params.push(offset)
+    params.push(limit)
+    const dataList = await queryAll(sql, params)
+    resolve({dataList, pageTotal, pageNo})
+  })
+}
+
 export {
   saveChatLogBatch,
+  selectMessageList,
 }

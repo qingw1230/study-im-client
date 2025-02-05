@@ -124,7 +124,7 @@ const queryCount = (sql, params) => {
       if (err) {
         resolve(0)
       }
-      resolve(Object.values(row))[0]
+      resolve(Array.from(Object.values(row))[0])
     })
     stmt.finalize()
   })
