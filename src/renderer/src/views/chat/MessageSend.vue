@@ -95,6 +95,8 @@ const sendMessage = (e) => {
   )
 }
 
+const emit = defineEmits(["sendMessageForLoacl"])
+
 const sendMessageDo = async (messageObj = {
   content,
   contentType,
@@ -126,7 +128,8 @@ const sendMessageDo = async (messageObj = {
     msgContent.value = ''
   }
   Object.assign(messageObj, result.data)
-  // TODO(qingw1230): 更新列表、保存消息到数据库
+  
+  emit("sendMessageForLoacl", messageObj)
   window.ipcRenderer.send('addLocalMessage', messageObj)
 }
 

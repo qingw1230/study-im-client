@@ -12,7 +12,8 @@
       <div class="chat-session-list">
         <template v-for="item in chatConversationList">
           <ChatConversation :data="item" @click="chatConversationClickHandler(item)"
-            @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
+            @contextmenu.stop="onContextMenu(item, $event)"
+            :currentSession="item.conversationId == currentChatConversation.conversationId"></ChatConversation>
         </template>
       </div>
     </template>
@@ -30,10 +31,14 @@
       <div class="chat-panel" v-show="Object.keys(currentChatConversation).length > 0">
         <div class="message-panel" id="message-panel">
           <div class="message-item" v-for="(data, index) in messageList" :id="'message' + data.seq">
-            {{ data.content }}
+            <template v-if="data.contentType == 101">
+              <ChatMessage :data="data" :currentChatConversation="currentChatConversation"></ChatMessage>
+            </template>
           </div>
         </div>
-        <MessageSend :currentChatConversation="currentChatConversation"></MessageSend>
+        <MessageSend :currentChatConversation="currentChatConversation"
+          @sendMessageForLoacl="sendMessageForLocalHandler">
+        </MessageSend>
       </div>
     </template>
   </Layout>
@@ -41,6 +46,7 @@
 
 <script setup>
 import MessageSend from './MessageSend.vue'
+import ChatMessage from './ChatMessage.vue'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ChatConversation from './ChatConversation.vue'
@@ -155,9 +161,32 @@ const onLoadChatMessage = () => {
     messageCountInfo.pageTotal = pageTotal
     if (pageNo == 1) {
       messageCountInfo.maxMessageId = dataList.length > 0 ? dataList[dataList.length - 1].seq : null
+      gotoBottom()
     }
+  })
+}
 
-    console.log(messageList.value)
+const sendMessageForLocalHandler = (messageObj) => {
+  messageList.value.push(messageObj)
+  const chatConversation = chatConversationList.value.find((item) => {
+    return item.conversationId == messageObj.sendId + messageObj.recvId
+  })
+  if (chatConversation) {
+    chatConversation.lastMessage = messageObj.content
+    chatConversation.lastMessageTime = messageObj.sendTime
+  }
+  sortChatConversationList(chatConversationList.value)
+  gotoBottom()
+}
+
+const gotoBottom = () => {
+  nextTick(() => {
+    const items = document.querySelectorAll(".message-item")
+    if (items.length > 0) {
+      setTimeout(() => {
+        items[items.length - 1].scrollIntoView()
+      }, 100)
+    }
   })
 }
 

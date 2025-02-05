@@ -80,7 +80,7 @@ const onSetConversationSelect = () => {
 
 const onAddLocalMessage = () => {
   ipcMain.on("addLocalMessage", async (e, data) => {
-    console.log("test: ", data)
+    await saveChatLog(data)
     // 更新会话
     let val = {
       conversationId: data.conversationId,
