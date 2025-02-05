@@ -2,8 +2,9 @@ import { ipcMain } from 'electron'
 import store from './store'
 import { initWs } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
-import { selectUserConversationList, delChatConversation, topChatConversation } from './db/ConversationModel'
-import { selectMessageList } from './db/ChatLogModel'
+import { selectUserConversationList, delChatConversation, topChatConversation, updateConversationInfoForMessage, readAll } from './db/ConversationModel'
+import { saveChatLog, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
+import e from 'express'
 
 const onLoginOrRegister = (callback) => {
   ipcMain.on("loginOrRegister", (e, isLogin) => {
@@ -66,6 +67,31 @@ const onLoadChatMessage = () => {
   })
 }
 
+const onSetConversationSelect = () => {
+  ipcMain.on("setConversationSelect", async (e, conversationId) => {
+    if (conversationId) {
+      store.setUserData("currentConversationId", conversationId)
+      readAll(conversationId)
+    } else {
+      store.deleteUserData("currentConversationId")
+    }
+  })
+}
+
+const onAddLocalMessage = () => {
+  ipcMain.on("addLocalMessage", async (e, data) => {
+    console.log("test: ", data)
+    // 更新会话
+    let val = {
+      conversationId: data.conversationId,
+      lastMessage: data.content,
+      lastMessageTime: data.sendTime,
+    }
+    updateConversationInfoForMessage(store.getUserData("currentConversationId"), val)
+    // e.sender.send("addLocalMessageCallback", { status: 1, messageId: data.seq })
+  })
+}
+
 export {
   onLoginOrRegister,
   onLoginSuccess,
@@ -76,4 +102,6 @@ export {
   onTopChatConversation,
   onDelChatConversation,
   onLoadChatMessage,
+  onSetConversationSelect,
+  onAddLocalMessage,
 }

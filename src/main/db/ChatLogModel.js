@@ -20,7 +20,7 @@ const saveChatLog = (data) => {
   data.recvId = contacdId
   data.conversationId = store.getUserId() + contacdId
   return insertOrReplace("chat_logs", data)
-}
+} 
 
 const saveChatLogBatch = (chatLogList) => {
   return new Promise(async (resolve, reject) => {
@@ -66,7 +66,7 @@ const selectMessageList = (query) => {
       sql = sql + " and seq <= ?"
       params.push(maxMessageId)
     }
-    sql = sql + " order by seq desc limit ?,?"
+    sql = sql + " order by seq asc limit ?,?"
     params.push(offset)
     params.push(limit)
     const dataList = await queryAll(sql, params)
@@ -75,6 +75,7 @@ const selectMessageList = (query) => {
 }
 
 export {
+  saveChatLog,
   saveChatLogBatch,
   selectMessageList,
 }

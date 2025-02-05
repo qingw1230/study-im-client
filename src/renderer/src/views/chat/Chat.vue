@@ -11,17 +11,36 @@
       </div>
       <div class="chat-session-list">
         <template v-for="item in chatConversationList">
-          <ChatConversation :data="item" @click="chatConversationClickHandler(item)" @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
+          <ChatConversation :data="item" @click="chatConversationClickHandler(item)"
+            @contextmenu.stop="onContextMenu(item, $event)"></ChatConversation>
         </template>
       </div>
     </template>
     <template #right-content>
-
+      <div class="title-panel drag" v-if="Object.keys(currentChatConversation).length > 0">
+        <div class="title">
+          <span> {{ currentChatConversation.conversationName }} </span>
+          <span v-if="currentChatConversation.conversationType != 1">
+            ({{ currentChatConversation.memberCount }})
+          </span>
+        </div>
+      </div>
+      <div v-if="currentChatConversation.conversationType != 1" class="iconfont icon-more no-drag"
+        @click="showGroupDetail"></div>
+      <div class="chat-panel" v-show="Object.keys(currentChatConversation).length > 0">
+        <div class="message-panel" id="message-panel">
+          <div class="message-item" v-for="(data, index) in messageList" :id="'message' + data.seq">
+            {{ data.content }}
+          </div>
+        </div>
+        <MessageSend :currentChatConversation="currentChatConversation"></MessageSend>
+      </div>
     </template>
   </Layout>
 </template>
 
 <script setup>
+import MessageSend from './MessageSend.vue'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ChatConversation from './ChatConversation.vue'
@@ -60,7 +79,7 @@ const delChatConversationList = (conversationId) => {
 const currentChatConversation = ref({})
 const messageList = ref([])
 const messageCountInfo = {
-  totalPage: 0,
+  totalPage: 1,
   pageNo: 0,
   maxMessageId: null,
   noData: false,
@@ -72,7 +91,18 @@ const chatConversationClickHandler = (item) => {
   messageList.value = []
   // TODO(qingw1230): 未读数的处理
 
+  messageCountInfo.pageNo = 0
+  messageCountInfo.totalPage = 1
+  messageCountInfo.maxMessageId = null
+  messageCountInfo.noData = false
+
+  setConversationSelect(item.conversationId)
+
   loadChatMessage()
+}
+
+const setConversationSelect = (conversationId) => {
+  window.ipcRenderer.send("setConversationSelect", conversationId)
 }
 
 const loadChatConversion = () => {
@@ -113,7 +143,7 @@ const onLoadConversationData = () => {
 }
 
 const onLoadChatMessage = () => {
-  window.ipcRenderer.on("loadChatMessageCallback", (e, {dataList, pageTotal, pageNo}) => {
+  window.ipcRenderer.on("loadChatMessageCallback", (e, { dataList, pageTotal, pageNo }) => {
     if (pageNo == pageTotal) {
       messageCountInfo.noData = true
     }
@@ -126,7 +156,7 @@ const onLoadChatMessage = () => {
     if (pageNo == 1) {
       messageCountInfo.maxMessageId = dataList.length > 0 ? dataList[dataList.length - 1].seq : null
     }
-    
+
     console.log(messageList.value)
   })
 }

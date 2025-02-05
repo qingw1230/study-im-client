@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, Menu, Tray } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore, onLoadConversationData, onDelChatConversation, onTopChatConversation, onLoadChatMessage } from './ipc'
+import { onLoginOrRegister, onLoginSuccess, onWinTitleOp, onSetLocalStore, onGetLocalStore, onLoadConversationData, onDelChatConversation, onTopChatConversation, onLoadChatMessage, onAddLocalMessage, onSetConversationSelect } from './ipc'
 
 const NODE_ENV = process.env.NODE_ENV
 const login_width = 300;
@@ -134,6 +134,8 @@ function createWindow() {
   onTopChatConversation()
   onDelChatConversation()
   onLoadChatMessage()
+  onSetConversationSelect()
+  onAddLocalMessage()
 }
 
 // This method will be called when Electron has finished

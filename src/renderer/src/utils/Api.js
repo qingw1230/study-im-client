@@ -21,6 +21,7 @@ const api = {
   getGroupInfo: "/group/get_group_info",
   setGroupInfo: "/group/set_group_info",
   getJoinedGroupList: "/group/get_joined_group_list",
+  sendMessage: "/msg/send_msg",
 }
 
 export default api;
