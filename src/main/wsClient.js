@@ -4,7 +4,7 @@ import store from "./store"
 import { createTable } from "./db/ADB"
 import { saveOrUpdateConversationBatchForInit } from "./db/ConversationModel"
 import { selectUserLocalSeqByUserId, updateUserLocalSeqByUserId } from "./db/UserSettingModel"
-import { saveChatLogBatch } from "./db/ChatLogModel"
+import { saveChatLog, saveChatLogBatch } from "./db/ChatLogModel"
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -64,24 +64,28 @@ const createWs = () => {
     }
 
     switch (message.reqIdentifier) {
-      case 1000:
+      case 1000: // WSHeartBeat
         break
-      case 1001:
+      case 1001: // WSGetNewestSeq
         let { localSeq } = await selectUserLocalSeqByUserId(globalUserId)
-        let newestSeq = payload.newestSeq 
+        let newestSeq = payload.newestSeq
         if (newestSeq > localSeq) {
           pullChatLogList(generateArray(localSeq, newestSeq))
         }
         break
-      case 1002:
+      case 1002: // WSPullMsgBySeqList
         await saveChatLogBatch(payload.list)
         sender.send("receiveMessage", { messageType: 1002 })
         break
-      case 1004:
+      case 1004: // WSPullConversationList
         if (payload && payload.conversationList) {
           await saveOrUpdateConversationBatchForInit(payload.conversationList)
           sender.send("receiveMessage", { messageType: 1004 })
         }
+        break
+      case 2001: // WSPushMsg
+        await saveChatLog(payload)
+        // TODO(qingw1230): 根据需要通知渲染端
         break
     }
   }
