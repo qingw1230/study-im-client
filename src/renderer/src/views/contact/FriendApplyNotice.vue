@@ -1,10 +1,10 @@
 <template>
-  <ContentPanel v-infinite-scroll="getFriendApplyList" :infinite-scroll-immediate="false" :showTopBorder="true">
-    <div class="apply-item" v-for="item in friendApplyList" :key="item.fromUserId">
-      <Avatar :width="50" :userId="item.fromUserId"></Avatar>
+  <ContentPanel v-infinite-scroll="loadFriendRequest" :infinite-scroll-immediate="false" :showTopBorder="true">
+    <div class="apply-item" v-for="item in friendReqiestList" :key="item.sendId">
+      <Avatar :width="50" :userId="item.sendId"></Avatar>
       <div class="contact-info">
-        <div class="nick-name">{{ item.fromNickName }}</div>
-        <div class="apply-info">{{ item.reqMsg }}</div>
+        <div class="nick-name">{{ item.senderNickName }}</div>
+        <div class="apply-info">{{ item.content }}</div>
       </div>
       <div class="op-btn">
         <div v-if="item.handleResult == null">
@@ -21,12 +21,12 @@
         <div v-else class="result-name">{{ item.handleResult }}</div>
       </div>
     </div>
-    <div v-if="friendApplyList.length == 0" class="no-data"> 暂无通知 </div>
+    <div v-if="friendReqiestList.length == 0" class="no-data"> 暂无通知 </div>
   </ContentPanel>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, watch } from 'vue'
+import { ref, reactive, getCurrentInstance, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useContactStateStore } from '@/stores/ContactStateStore'
 import { useUserInfoStore } from '@/stores/UserInfoStore'
 
@@ -34,21 +34,23 @@ const { proxy } = getCurrentInstance()
 const contactStateStore = useContactStateStore()
 const userInfoStore = useUserInfoStore()
 
-const friendApplyList = ref([])
-const getFriendApplyList = async () => {
-  let result = await proxy.Request({
-    url: proxy.Api.getFriendApplyList,
-    params: {
-      fromUserId: userInfoStore.getInfo().userId
-    }
-  })
-  if (!result) {
-    return
-  }
-  friendApplyList.value = result.data
+const friendReqiestList = ref([])
+
+const loadFriendRequest = () => {
+  window.ipcRenderer.send("loadFriendRequest")
 }
 
-getFriendApplyList()
+const onLoadFriendRequest = () => {
+  window.ipcRenderer.on("loadFriendRequestCallback", (e, dataList) => {
+    friendReqiestList.value = dataList.dataList
+  })
+}
+
+const onPushFriendRequest = () => {
+  window.ipcRenderer.on("pushFriendRequest", (e) => {
+    loadFriendRequest()
+  })
+}
 
 const addFriendResponse = async (fromUserId, toUserId, handleResult) => {
   contactStateStore.setContactReload(null)
@@ -68,6 +70,13 @@ const addFriendResponse = async (fromUserId, toUserId, handleResult) => {
     contactStateStore.setContactReload("FRIEND_LIST")
   }
 }
+
+onMounted(() => {
+  onLoadFriendRequest()
+  onPushFriendRequest()
+
+  loadFriendRequest()
+})
 
 // TODO(qingw1230): 监听消息数
 

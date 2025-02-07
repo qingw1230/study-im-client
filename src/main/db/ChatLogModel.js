@@ -18,7 +18,7 @@ const getPageOffset = (pageNo = 1, totalCount) => {
 const saveChatLog = (data) => {
   let contacdId = data.sessionType == 1 ? data.recvId : data.groupId
   data.recvId = contacdId
-  data.conversationId = store.getUserId() + contacdId
+  data.conversationId = data.sendId + contacdId
   return insertOrReplace("chat_logs", data)
 } 
 
@@ -74,8 +74,18 @@ const selectMessageList = (query) => {
   })
 }
 
+const getFriendRequestList = (recvId) => {
+  return new Promise(async (resolve, reject) => {
+    let sql = 'select *, max(seq) from chat_logs where content_type = 1201 and recv_id = ? group by send_id'
+    const params = [recvId]
+    const friendRequestList = await queryAll(sql, params)
+    resolve({dataList: friendRequestList})
+  })
+}
+
 export {
   saveChatLog,
   saveChatLogBatch,
   selectMessageList,
+  getFriendRequestList,
 }
