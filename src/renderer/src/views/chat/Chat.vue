@@ -45,11 +45,12 @@ import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ChatConversation from './ChatConversation.vue'
 import { ref, reactive, getCurrentInstance, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-
+import { useUserInfoStore } from '@/stores/UserInfoStore'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
+const userInfoStore = useUserInfoStore()
 
 const searchKey = ref()
 const search = ref()
@@ -115,6 +116,12 @@ const onLoadConversationData = () => {
   })
 }
 
+const onReceivePushMessage = () => {
+  window.ipcRenderer.on("receivePushMessage", (e, data) => {
+    sendMessageForLocalHandler(data)
+  })
+}
+
 // loadChatMessage 加载会话的聊天记录
 const loadChatMessage = () => {
   if (messageCountInfo.noData) {
@@ -122,7 +129,6 @@ const loadChatMessage = () => {
   }
 
   messageCountInfo.pageNo++
-  console.log(currentChatConversation.value.conversationId)
   window.ipcRenderer.send("loadChatMessage", {
     conversationId: currentChatConversation.value.conversationId,
     pageNo: messageCountInfo.pageNo,
@@ -164,11 +170,20 @@ const onReceiveMessage = () => {
 
 const sendMessageForLocalHandler = (messageObj) => {
   messageList.value.push(messageObj)
-  const chatConversation = chatConversationList.value.find((item) => {
-    return item.conversationId == messageObj.sendId + messageObj.recvId
-  })
   sortChatConversationList(chatConversationList.value)
   gotoBottom()
+
+  let userId = userInfoStore.getInfo().userId
+  let contacdId = messageObj.sessionType == 1 ? messageObj.recvId : messageObj.groupId
+  if (userId == messageObj.sendId) {
+    messageObj.conversationId = userId + contacdId
+  } else {
+    messageObj.conversationId = userId + messageObj.sendId
+  }
+
+  const chatConversation = chatConversationList.value.find((item) => {
+    return item.conversationId == messageObj.conversationId 
+  })
   if (chatConversation) {
     chatConversation.lastMessage = messageObj.content
     chatConversation.lastMessageTime = messageObj.sendTime
@@ -190,6 +205,7 @@ onMounted(() => {
   onLoadConversationData()
   onLoadChatMessage()
   onReceiveMessage()
+  onReceivePushMessage()
 
   loadChatConversion()
 })
@@ -198,6 +214,7 @@ onUnmounted(() => {
   window.ipcRenderer.removeAllListeners("loadConversationDataCallback")
   window.ipcRenderer.removeAllListeners("loadChatMessageCallback")
   window.ipcRenderer.removeAllListeners("receiveMessage")
+  window.ipcRenderer.removeAllListeners("receivePushMessage")
 })
 
 const setTop = (data) => {

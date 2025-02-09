@@ -85,8 +85,11 @@ const createWs = () => {
         break
       case 2001: // WSPushMsg
         await saveChatLogBatch([payload])
-        // TODO(qingw1230): 根据需要通知渲染端
-        sender.send("pushFriendRequest")
+        if (payload.contentType == 101) {
+          sender.send("receivePushMessage", payload)
+        } else if (payload.contentType == 1201) {
+          sender.send("pushFriendRequest")
+        }
         break
     }
   }

@@ -4,7 +4,7 @@ import { updateNoReadCount } from "./ConversationModel";
 import { selectUserLocalSeqByUserId, updateUserLocalSeqByUserId } from "./UserSettingModel";
 
 const getPageOffset = (pageNo = 1, totalCount) => {
-  const pageSize = 20;
+  const pageSize = 100;
   const pageTotal = Number.parseInt((totalCount + pageSize - 1) / pageSize)
   pageNo = pageNo <= 1 ? 1 : pageNo;
   pageNo = pageNo >= pageTotal ? pageTotal : pageNo;
