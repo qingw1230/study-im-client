@@ -21,10 +21,6 @@
           <div class="iconfont icon-emoji" @click="showEmojiPopoverHandler"></div>
         </template>
       </el-popover>
-      <!-- <el-upload ref="uploadRef" name="file" :show-file-list="false" :multiple="true" :limit="fileLimit"
-        :http-request="uploadFile" :on-exceed="uploadExceed">
-        <div class="iconfont icon-folder"></div>
-      </el-upload> -->
     </div>
     <div class="input-area" @drop="dropHandler" @dragover="dragOverHandler">
       <el-input rows="5" v-model="msgContent" type="textarea" resize="none" maxlength="500" show-word-limit

@@ -18,7 +18,7 @@ const getPageOffset = (pageNo = 1, totalCount) => {
 const saveChatLog = (data) => {
   let contacdId = data.sessionType == 1 ? data.recvId : data.groupId
   data.recvId = contacdId
-  data.conversationId = data.sendId + contacdId
+  data.conversationId =  contacdId + data.sendId
   return insertOrReplace("chat_logs", data)
 }
 

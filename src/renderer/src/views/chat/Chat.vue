@@ -2,13 +2,6 @@
   <Layout>
     <template #left-content>
       <div class="drag-panel drag"></div>
-      <div class="top-search">
-        <el-input clearable placeholder="搜索" v-model="searchKey" size="default" @keyup="search">
-          <template #suffix>
-            <span class="iconfont icon-search"></span>
-          </template>
-        </el-input>
-      </div>
       <div class="chat-session-list">
         <template v-for="item in chatConversationList">
           <ChatConversation :data="item" @click="chatConversationClickHandler(item)"
@@ -115,32 +108,6 @@ const loadChatConversion = () => {
   window.ipcRenderer.send("loadConversationData")
 }
 
-const loadChatMessage = () => {
-  if (messageCountInfo.noData) {
-    return
-  }
-
-  messageCountInfo.pageNo++
-  window.ipcRenderer.send("loadChatMessage", {
-    conversationId: currentChatConversation.value.conversationId,
-    pageNo: messageCountInfo.pageNo,
-    maxMessageId: messageCountInfo.maxMessageId,
-  })
-}
-
-const onReceiveMessage = () => {
-  window.ipcRenderer.on("receiveMessage", (e, message) => {
-    console.log("收到消息", message)
-    switch (message.messageType) {
-      case 1000:
-        break
-      case 1004:
-        loadChatConversion()
-        break
-    }
-  })
-}
-
 const onLoadConversationData = () => {
   window.ipcRenderer.on("loadConversationDataCallback", (e, dataList) => {
     sortChatConversationList(dataList)
@@ -148,6 +115,22 @@ const onLoadConversationData = () => {
   })
 }
 
+// loadChatMessage 加载会话的聊天记录
+const loadChatMessage = () => {
+  if (messageCountInfo.noData) {
+    return
+  }
+
+  messageCountInfo.pageNo++
+  console.log(currentChatConversation.value.conversationId)
+  window.ipcRenderer.send("loadChatMessage", {
+    conversationId: currentChatConversation.value.conversationId,
+    pageNo: messageCountInfo.pageNo,
+    maxMessageId: messageCountInfo.maxMessageId,
+  })
+}
+
+// onLoadChatMessage 收到主进程从数据库中读到的聊天记录
 const onLoadChatMessage = () => {
   window.ipcRenderer.on("loadChatMessageCallback", (e, { dataList, pageTotal, pageNo }) => {
     if (pageNo == pageTotal) {
@@ -162,6 +145,19 @@ const onLoadChatMessage = () => {
     if (pageNo == 1) {
       messageCountInfo.maxMessageId = dataList.length > 0 ? dataList[dataList.length - 1].seq : null
       gotoBottom()
+    }
+  })
+}
+
+const onReceiveMessage = () => {
+  window.ipcRenderer.on("receiveMessage", (e, message) => {
+    console.log("收到消息", message)
+    switch (message.messageType) {
+      case 1000:
+        break
+      case 1004:
+        loadChatConversion()
+        break
     }
   })
 }
@@ -191,17 +187,17 @@ const gotoBottom = () => {
 }
 
 onMounted(() => {
-  onReceiveMessage()
   onLoadConversationData()
   onLoadChatMessage()
+  onReceiveMessage()
 
   loadChatConversion()
 })
 
 onUnmounted(() => {
-  window.ipcRenderer.removeAllListeners("receiveMessage")
   window.ipcRenderer.removeAllListeners("loadConversationDataCallback")
   window.ipcRenderer.removeAllListeners("loadChatMessageCallback")
+  window.ipcRenderer.removeAllListeners("receiveMessage")
 })
 
 const setTop = (data) => {
