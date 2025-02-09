@@ -15,11 +15,18 @@ const getPageOffset = (pageNo = 1, totalCount) => {
   }
 }
 
+// saveChatLog 保存一条聊天记录，不能被外部调用
 const saveChatLog = (data) => {
+  let userId = store.getUserId()
   let contacdId = data.sessionType == 1 ? data.recvId : data.groupId
-  data.recvId = contacdId
-  data.conversationId =  contacdId + data.sendId
-  return insertOrReplace("chat_logs", data)
+  if (userId == data.sendId) {
+    data.recvId = contacdId
+    data.conversationId = userId + contacdId
+  } else {
+    data.recvId = userId
+    data.conversationId = userId + data.sendId
+  }
+  return insertOrIgnore("chat_logs", data)
 }
 
 const saveChatLogBatch = (chatLogList) => {
@@ -100,7 +107,6 @@ const updateFriendRequest = (data) => {
 }
 
 export {
-  saveChatLog,
   saveChatLogBatch,
   selectMessageList,
   getFriendRequestList,

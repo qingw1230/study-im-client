@@ -3,7 +3,7 @@ import store from './store'
 import { initWs } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
 import { selectUserConversationList, delChatConversation, topChatConversation, updateConversationInfoForMessage, readAll } from './db/ConversationModel'
-import { getFriendRequestList, updateFriendRequest,saveChatLog, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
+import { getFriendRequestList, updateFriendRequest, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
 import e from 'express'
 
 const onLoginOrRegister = (callback) => {
@@ -80,7 +80,7 @@ const onSetConversationSelect = () => {
 
 const onAddLocalMessage = () => {
   ipcMain.on("addLocalMessage", async (e, data) => {
-    await saveChatLog(data)
+    await saveChatLogBatch([data])
     // 更新会话
     let val = {
       conversationId: data.conversationId,

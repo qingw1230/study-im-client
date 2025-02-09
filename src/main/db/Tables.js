@@ -18,7 +18,7 @@ const add_tables = [
   // "   file_name varchar," +
   // "   file_path varchar," +
   // "   file_type integer," +
-  "   primary key(server_msg_id)" +
+  "   primary key(server_msg_id, conversation_id)" +
   ");",
   "create table if not exists conversations (" +
   "   owner_user_id varchar(12) not null," +

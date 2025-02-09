@@ -4,7 +4,7 @@ import store from "./store"
 import { createTable } from "./db/ADB"
 import { saveOrUpdateConversationBatchForInit } from "./db/ConversationModel"
 import { selectUserLocalSeqByUserId, updateUserLocalSeqByUserId } from "./db/UserSettingModel"
-import { getFriendApplyList, saveChatLog, saveChatLogBatch } from "./db/ChatLogModel"
+import { getFriendApplyList, saveChatLogBatch } from "./db/ChatLogModel"
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -84,7 +84,7 @@ const createWs = () => {
         }
         break
       case 2001: // WSPushMsg
-        await saveChatLog(payload)
+        await saveChatLogBatch([payload])
         // TODO(qingw1230): 根据需要通知渲染端
         sender.send("pushFriendRequest")
         break
