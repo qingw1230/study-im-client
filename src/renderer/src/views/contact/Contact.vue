@@ -150,7 +150,11 @@ const loadFriendList = async () => {
   let result = await proxy.Request({
     url: proxy.Api.getFriendList,
     params: {
-      fromUserId: userInfoStore.getInfo().userId
+      userId: userInfoStore.getInfo().userId,
+      pagination: {
+        pageNumber: 1,
+      showNumber: 100,
+      }
     }
   })
   if (!result) {
@@ -178,7 +182,7 @@ const loadMyGroup = async () => {
   partList.value[1].contactData = result.data
 }
 
-loadMyGroup()
+// loadMyGroup()
 
 // loadJoinedGroup 获取创建的群聊
 const loadJoinedGroup = async () => {
@@ -196,7 +200,7 @@ const loadJoinedGroup = async () => {
   partList.value[2].contactData = result.data
 }
 
-loadJoinedGroup()
+// loadJoinedGroup()
 
 // contactDetail 获取联系人或群聊详细信息
 const contactDetail = (contact, part) => {
