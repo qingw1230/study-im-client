@@ -153,7 +153,7 @@ const loadFriendList = async () => {
       userId: userInfoStore.getInfo().userId,
       pagination: {
         pageNumber: 1,
-      showNumber: 100,
+        showNumber: 100,
       }
     }
   })
