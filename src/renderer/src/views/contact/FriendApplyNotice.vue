@@ -78,6 +78,11 @@ onMounted(() => {
   loadFriendRequest()
 })
 
+onUnmounted(() => {
+  window.ipcRenderer.removeAllListeners("loadFriendRequestCallback")
+  window.ipcRenderer.removeAllListeners("pushFriendRequest")
+})
+
 // TODO(qingw1230): 监听消息数
 
 </script>
