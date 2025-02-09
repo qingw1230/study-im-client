@@ -20,7 +20,7 @@ const saveChatLog = (data) => {
   data.recvId = contacdId
   data.conversationId = data.sendId + contacdId
   return insertOrReplace("chat_logs", data)
-} 
+}
 
 const saveChatLogBatch = (chatLogList) => {
   return new Promise(async (resolve, reject) => {
@@ -83,9 +83,26 @@ const getFriendRequestList = (recvId) => {
   })
 }
 
+const updateFriendRequest = (data) => {
+  return new Promise(async (resolve, reject) => {
+    const {sendId, recvId, seq, status} = data
+    const paramData = {
+      sendId, 
+      recvId,
+      seq,
+    }
+    const updateInfo = {
+      status,
+    }
+    await update("chat_logs", updateInfo, paramData)
+    resolve()
+  })
+}
+
 export {
   saveChatLog,
   saveChatLogBatch,
   selectMessageList,
   getFriendRequestList,
+  updateFriendRequest,
 }

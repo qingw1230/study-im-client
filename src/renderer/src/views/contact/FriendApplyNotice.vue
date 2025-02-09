@@ -7,18 +7,20 @@
         <div class="apply-info">{{ item.content }}</div>
       </div>
       <div class="op-btn">
-        <div v-if="item.handleResult == null">
+        <div v-if="item.status == null">
           <el-dropdown placement="bottom" trigger="click">
             <span class="el-dropdown-link">
               <el-button type="primary" size="small">接受</el-button>
             </span>
             <template #dropdown>
-              <el-dropdown-item @click="addFriendResponse(item.fromUserId, item.toUserId, 1)"> 同意 </el-dropdown-item>
-              <el-dropdown-item @click="addFriendResponse(item.fromUserId, item.toUserId, -1)"> 拒绝 </el-dropdown-item>
+              <el-dropdown-item @click="addFriendResponse(item.sendId, item.recvId, item.seq, 1)"> 同意 </el-dropdown-item>
+              <el-dropdown-item @click="addFriendResponse(item.sendId, item.recvId, item.seq, -1)"> 拒绝 </el-dropdown-item>
             </template>
           </el-dropdown>
         </div>
-        <div v-else class="result-name">{{ item.handleResult }}</div>
+        <div v-else-if="item.status === 1" class="result-name"> 已同意 </div>
+        <div v-else-if="item.status === -1" class="result-name"> 已拒绝 </div>
+        <div v-else class="result-name"> 其他状态 </div>
       </div>
     </div>
     <div v-if="friendReqiestList.length == 0" class="no-data"> 暂无通知 </div>
@@ -36,6 +38,38 @@ const userInfoStore = useUserInfoStore()
 
 const friendReqiestList = ref([])
 
+const addFriendResponse = async (sendId, recvId, seq, handleResult) => {
+  contactStateStore.setContactReload(null)
+  let result = await proxy.Request({
+    url: proxy.Api.addFriendResponse,
+    params: {
+      fromUserId: sendId,
+      toUserId: recvId,
+      handleResult: handleResult,
+    }
+  })
+  if (!result) {
+    return
+  }
+
+  updateFriendRequest(sendId, recvId, seq, handleResult)
+
+  if (handleResult == 1) {
+    contactStateStore.setContactReload("FRIEND_LIST")
+  }
+}
+
+// updateFriendRequest 更新好友请求列表
+const updateFriendRequest = (sendId, recvId, seq, handleResult) => {
+  window.ipcRenderer.send("updateFriendRequest", {
+    sendId: sendId,
+    recvId: recvId,
+    seq: seq,
+    status: handleResult,
+  })
+}
+
+// loadFriendRequest 加载好友请求列表
 const loadFriendRequest = () => {
   window.ipcRenderer.send("loadFriendRequest")
 }
@@ -50,25 +84,6 @@ const onPushFriendRequest = () => {
   window.ipcRenderer.on("pushFriendRequest", (e) => {
     loadFriendRequest()
   })
-}
-
-const addFriendResponse = async (fromUserId, toUserId, handleResult) => {
-  contactStateStore.setContactReload(null)
-  let result = await proxy.Request({
-    url: proxy.Api.addFriendResponse,
-    params: {
-      fromUserId: fromUserId,
-      toUserId: toUserId,
-      handleResult: handleResult,
-    }
-  })
-  if (!result) {
-    return
-  }
-
-  if (handleResult == 1) {
-    contactStateStore.setContactReload("FRIEND_LIST")
-  }
 }
 
 onMounted(() => {

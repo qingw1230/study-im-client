@@ -3,7 +3,7 @@ import store from './store'
 import { initWs } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
 import { selectUserConversationList, delChatConversation, topChatConversation, updateConversationInfoForMessage, readAll } from './db/ConversationModel'
-import { getFriendRequestList, saveChatLog, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
+import { getFriendRequestList, updateFriendRequest,saveChatLog, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
 import e from 'express'
 
 const onLoginOrRegister = (callback) => {
@@ -99,6 +99,14 @@ const onLoadFriendRequestList = () => {
   })
 }
 
+const onUpdateFriendRequest = () => {
+  ipcMain.on("updateFriendRequest", async (e, data) => {
+    await updateFriendRequest(data)
+    const friendRequestList = await getFriendRequestList(store.getUserId())
+    e.sender.send("loadFriendRequestCallback", friendRequestList)
+  })
+}
+
 export {
   onLoginOrRegister,
   onLoginSuccess,
@@ -112,4 +120,5 @@ export {
   onSetConversationSelect,
   onAddLocalMessage,
   onLoadFriendRequestList,
+  onUpdateFriendRequest,
 }

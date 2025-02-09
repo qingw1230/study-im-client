@@ -65,6 +65,7 @@ const insertOrIgnore = (tableName, data) => {
   return insert("insert or ignore into", tableName, data)
 }
 
+// update 更新表中数据，data 为要更新的数据，paramData 为 where 中的条件
 const update = (tableName, data, paramData) => {
   const columnsMap = globalColumnsMap[tableName]
   const dbColumns = []
@@ -85,6 +86,7 @@ const update = (tableName, data, paramData) => {
   }
 
   const sql = `update ${tableName} set ${dbColumns.join(",")} ${whereColumns.length > 0 ? 'where ' : ''} ${whereColumns.join(" and ")}`
+  console.log(sql)
   return run(sql, params)
 }
 
