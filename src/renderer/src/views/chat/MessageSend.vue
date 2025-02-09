@@ -99,6 +99,7 @@ const sendMessageDo = async (messageObj = {
 }, cleanMsgContent) => {
   messageObj.sendId = props.currentChatConversation.ownerUserId
   messageObj.recvId = props.currentChatConversation.contactId
+  messageObj.senderNickName = userInfoStore.getInfo().nickName
   messageObj.groupId = props.currentChatConversation.contactId
   messageObj.sessionType = props.currentChatConversation.conversationType
   messageObj.msgFrom = 100
@@ -108,8 +109,7 @@ const sendMessageDo = async (messageObj = {
     url: proxy.Api.sendMessage,
     showLoading: false,
     params: {
-      sendId: messageObj.sendId,
-      data: messageObj
+      ...messageObj
     },
     showError: false,
     errorCallback: (responseData) => {
