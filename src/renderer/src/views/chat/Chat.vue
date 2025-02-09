@@ -167,12 +167,12 @@ const sendMessageForLocalHandler = (messageObj) => {
   const chatConversation = chatConversationList.value.find((item) => {
     return item.conversationId == messageObj.sendId + messageObj.recvId
   })
+  sortChatConversationList(chatConversationList.value)
+  gotoBottom()
   if (chatConversation) {
     chatConversation.lastMessage = messageObj.content
     chatConversation.lastMessageTime = messageObj.sendTime
   }
-  sortChatConversationList(chatConversationList.value)
-  gotoBottom()
 }
 
 const gotoBottom = () => {

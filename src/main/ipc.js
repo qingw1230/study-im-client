@@ -78,6 +78,7 @@ const onSetConversationSelect = () => {
   })
 }
 
+// onAddLocalMessage 将自己发的消息保存到本地数据库
 const onAddLocalMessage = () => {
   ipcMain.on("addLocalMessage", async (e, data) => {
     await saveChatLogBatch([data])
@@ -88,7 +89,6 @@ const onAddLocalMessage = () => {
       lastMessageTime: data.sendTime,
     }
     updateConversationInfoForMessage(store.getUserData("currentConversationId"), val)
-    // e.sender.send("addLocalMessageCallback", { status: 1, messageId: data.seq })
   })
 }
 

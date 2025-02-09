@@ -5,7 +5,7 @@ const addConversation = (conversationInfo) => {
   insertOrIgnore("conversations", conversationInfo)
 }
 
-const updateConversationInfoForMessage = async (currentConversationId, {conversationId, conversation_name: conversationName, lastMessage, lastMessageTime, memberCount}) => {
+const updateConversationInfoForMessage = async (currentConversationId, {conversationId, conversationName, lastMessage, lastMessageTime, memberCount}) => {
   const params = [lastMessage, lastMessageTime]
   let sql = "update conversations set last_message = ?, last_message_time = ?, status = 1"
   if (conversationName != null) {

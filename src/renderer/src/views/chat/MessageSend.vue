@@ -124,7 +124,6 @@ const sendMessageDo = async (messageObj = {
     msgContent.value = ''
   }
   Object.assign(messageObj, result.data)
-  
   emit("sendMessageForLoacl", messageObj)
   window.ipcRenderer.send('addLocalMessage', messageObj)
 }
