@@ -63,8 +63,10 @@ const submit = async () => {
         url: proxy.Api.createGroup,
         params: {
           ownerUserId: userInfoStore.getInfo().userId,
-          groupName: formData.value.groupName,
-          introduction: formData.value.introduction
+          groupInfo: {
+            groupName: formData.value.groupName,
+            introduction: formData.value.introduction,
+          } 
         }
       })
       if (!result) {
