@@ -153,6 +153,7 @@ const submit = async () => {
     params: {
       email: formData.value.email,
       password: formData.value.password,
+      platformId: 1,
       checkCode: formData.value.checkCode,
       checkCodeId: localStorage.getItem("checkCodeId"),
       nickName: formData.value.nickName,
