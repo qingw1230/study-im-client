@@ -221,5 +221,6 @@ function base64ToJSON(base64String) {
 
 export {
   initWs,
-  closeWs
+  closeWs,
+  pullConversationList,
 }

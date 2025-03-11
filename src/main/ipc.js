@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import store from './store'
-import { initWs } from './wsClient'
+import { initWs, pullConversationList } from './wsClient'
 import { addUserSetting } from './db/UserSettingModel'
 import { selectUserConversationList, delChatConversation, topChatConversation, updateConversationInfoForMessage, readAll } from './db/ConversationModel'
 import { getFriendRequestList, updateFriendRequest, saveChatLogBatch, selectMessageList } from './db/ChatLogModel'
@@ -96,6 +96,8 @@ const onLoadFriendRequestList = () => {
   ipcMain.on("loadFriendRequest", async (e) => {
     const friendRequestList = await getFriendRequestList(store.getUserId())
     e.sender.send("loadFriendRequestCallback", friendRequestList)
+    // TODO(qingw1230): 会话列表由服务器推送
+    pullConversationList()
   })
 }
 
