@@ -21,6 +21,15 @@
           <div class="iconfont icon-emoji" @click="showEmojiPopoverHandler"></div>
         </template>
       </el-popover>
+      <!-- <el-upload
+        ref="uploadRef"
+        name="file"
+        :show-file-list="false"
+        :multiple="true"
+        :limit="fileLimit"
+        :http-request="uploadFile"
+        :on-exceed="uploadExceed"
+      ></el-upload> -->
     </div>
     <div class="input-area" @drop="dropHandler" @dragover="dragOverHandler">
       <el-input rows="5" v-model="msgContent" type="textarea" resize="none" maxlength="500" show-word-limit
@@ -60,6 +69,15 @@ const props = defineProps({
 
 const activeEmoji = ref('笑脸')
 const msgContent = ref()
+
+const sendEmoji = (emoji) => {
+  msgContent.value = msgContent.value + emoji
+  showEmojiPopover.value = false
+}
+
+const showEmojiPopoverHandler = () => {
+  showEmojiPopover.value = true
+}
 
 const showEmojiPopover = ref(false)
 const showSendMsgPopover = ref(false)
@@ -126,6 +144,12 @@ const sendMessageDo = async (messageObj = {
   Object.assign(messageObj, result.data)
   emit("sendMessageForLoacl", messageObj)
   window.ipcRenderer.send('addLocalMessage', messageObj)
+}
+
+const uploadRef = ref();
+const uplodaFile = (file)=>{
+  sendMessageDo(file.file)
+  uploadRef.value.clearFiles()
 }
 
 </script>
